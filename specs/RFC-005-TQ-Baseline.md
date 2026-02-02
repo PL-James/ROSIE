@@ -2,12 +2,13 @@
 
 ## Metadata
 
-| Field  | Value                                                                |
-| ------ | -------------------------------------------------------------------- |
-| RFC ID | 005                                                                  |
-| Title  | ROSIE TQ Baseline: Reference Dataset and Product Archetype Standards |
-| Status | Draft                                                                |
-| Focus  | GAMP 5, tool validation, product archetypes, SVCV                    |
+| Field   | Value                                                                |
+| ------- | -------------------------------------------------------------------- |
+| RFC ID  | 005                                                                  |
+| Title   | ROSIE TQ Baseline: Reference Dataset and Product Archetype Standards |
+| Version | 1.1.0                                                                |
+| Status  | Draft                                                                |
+| Focus   | GAMP 5, tool validation, product archetypes, multi-repo, SVCV        |
 
 ## 1. Scope
 

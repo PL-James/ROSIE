@@ -6,9 +6,10 @@ description: Real-time Oversight & Systematic Integrity Evidence — The "Valida
 
 | Field             | Value                                                              |
 | ----------------- | ------------------------------------------------------------------ |
-| Framework Version | 1.0.0                                                              |
+| Framework Version | 1.1.0                                                              |
 | Principles        | GAMP 5 (2nd Ed), CSA (Critical Thinking), 21 CFR Part 11, Annex 11 |
 | Philosophy        | Native Compliance, Dual-Ledger, Self-Validating                    |
+| Scope             | Connected environments (air-gapped deployments out of scope)       |
 
 ## 1. Basic Premise
 
@@ -47,6 +48,33 @@ ROSIE operates on the principle that intent lives in Git, but approval lives in 
 - **SoR ledger**: Contains the "who," the signature, and the audit evidence
 - **Handshake**: A cryptographic manifest hash ([RFC-002](/ROSIE/specs/rfc-002/)) ensures the SoR only approves a specific, immutable repo state
 
+### 3.1 ROSIE Boundary (What's In Scope)
+
+ROSIE defines:
+
+- **Data formats**: How to tag code and structure requirements ([RFC-001](/ROSIE/specs/rfc-001/))
+- **Hash computation**: How to generate deterministic integrity fingerprints ([RFC-002](/ROSIE/specs/rfc-002/))
+- **Evidence schema**: How to package test execution artifacts ([RFC-003](/ROSIE/specs/rfc-003/))
+- **API contract**: The interface any SoR must implement ([RFC-004](/ROSIE/specs/rfc-004/))
+- **Qualification protocol**: How to validate a ROSIE-compliant engine ([RFC-005](/ROSIE/specs/rfc-005/))
+
+### 3.2 SoR Responsibility (What's Out of Scope)
+
+The System of Record is responsible for:
+
+- **User authentication and authorization**: Who can approve what
+- **Approval workflows**: Sequential, parallel, role-based, or custom
+- **Electronic signatures**: 21 CFR Part 11 compliant signature capture
+- **Audit trail storage**: Immutable record retention
+- **Notification and escalation**: Alerting stakeholders
+
+Any system that implements [RFC-004](/ROSIE/specs/rfc-004/)'s API contract can serve as the SoR: commercial QMS platforms, PLM systems, or custom-built approval applications.
+
+### 3.3 Out of Scope
+
+- **Air-gapped environments**: ROSIE assumes network connectivity between CI/CD and SoR
+- **Offline approval workflows**: All approvals must be recorded in the SoR before release gates pass
+
 ---
 
 ## 4. Validation Models
@@ -76,7 +104,48 @@ For modern CI/CD, ROSIE enables a living validation state:
 
 ---
 
-## 6. The "Watchdog" (Self-Validation)
+## 6. Multi-Repository Products
+
+Many GxP products span multiple repositories. ROSIE supports this through product composition.
+
+### 6.1 Product Manifest Linking
+
+The root product declares dependencies in `gxp-product.md`:
+
+```yaml
+product_name: "LabData-Platform"
+product_code: "LDP"
+composition:
+  - repo: "github.com/org/labdata-core"
+    product_code: "LDC"
+    version: "2.1.0"
+    rrt_required: true
+  - repo: "github.com/org/labdata-auth"
+    product_code: "LDA"
+    version_constraint: "^1.5.0"
+    rrt_required: true
+```
+
+### 6.2 Aggregated Traceability
+
+When validating a composed product:
+
+1. Each sub-repository must have a valid Release Readiness Token (RRT)
+2. The root product's trace graph includes edges to sub-repository nodes
+3. The manifest hash incorporates sub-repository hashes
+
+### 6.3 Cross-Repository Tracing
+
+Requirements can trace across repository boundaries:
+
+```python
+# @gxp-id: LDP-DS-001
+# @gxp-traces: LDC-FRS-101, LDA-URS-005
+```
+
+---
+
+## 7. The "Watchdog" (Self-Validation)
 
 As defined in [RFC-005](/ROSIE/specs/rfc-005/), the framework is self-validating. The tool that generates compliance evidence must prove its own integrity (via recursive self-tests) during every execution, ensuring the evidence has not been tampered with or corrupted by the tool itself.
 

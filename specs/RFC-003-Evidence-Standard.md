@@ -2,12 +2,13 @@
 
 ## Metadata
 
-| Field  | Value                                                                |
-| ------ | -------------------------------------------------------------------- |
-| RFC ID | 003                                                                  |
-| Title  | ROSIE Evidence Standard: Schema for Automated Qualification Evidence |
-| Status | Draft                                                                |
-| Focus  | 21 CFR Part 11 compliance, evidence schemas, immutable logs          |
+| Field   | Value                                                                |
+| ------- | -------------------------------------------------------------------- |
+| RFC ID  | 003                                                                  |
+| Title   | ROSIE Evidence Standard: Schema for Automated Qualification Evidence |
+| Version | 1.1.0                                                                |
+| Status  | Draft                                                                |
+| Focus   | 21 CFR Part 11 compliance, evidence schemas, immutable logs          |
 
 ## 1. Scope
 

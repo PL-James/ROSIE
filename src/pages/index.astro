@@ -11,7 +11,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ██████╔╝██║   ██║███████╗██║█████╗
 ██╔══██╗██║   ██║╚════██║██║██╔══╝
 ██║  ██║╚██████╔╝███████║██║███████╗
-╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝╚══════╝</pre>
+╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝╚══════╝
+              v1.1.0</pre>
       <h1 class="hero-title">
         <span class="gradient-text">Compliance as Code</span><br>
         for GxP Systems
@@ -104,6 +105,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <tr><td><a href="/ROSIE/specs/rfc-005/">RFC-005</a></td><td>TQ Baseline</td><td>Self-validation, product archetypes</td></tr>
         </tbody>
       </table>
+
+      <hr>
+
+      <h2>ROSIE Boundary</h2>
+      <p>ROSIE is a <strong>specification</strong>, not a complete system. It defines:</p>
+      <ul>
+        <li>How to structure compliance artifacts in repositories</li>
+        <li>How to compute deterministic integrity hashes</li>
+        <li>The API contract for approval systems (System of Record)</li>
+      </ul>
+      <p>Your <strong>System of Record (SoR)</strong>—whether a commercial QMS, PLM, or custom system—handles user management, approval workflows, electronic signatures, and audit storage. ROSIE defines the interface; the SoR implements the approval logic.</p>
 
       <hr>
 

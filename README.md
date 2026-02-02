@@ -11,6 +11,7 @@
 =   ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝╚══════╝                                              =
 =                                                                                      =
 =   ROSIE :: Repo-Oriented Secure Integrity Engine                                    =
+=   VERSION :: 1.1.0                                                                  =
 =   MODE  :: GAMP5 + CSA + 21 CFR Part 11                                             =
 =   MODEL :: Truth-in-Code / Dual-Ledger / Cryptographic Hard Gates                   =
 =                                                                                      =
@@ -60,6 +61,8 @@ Two ledgers — two roles:
 
 Git stores **what was built and why**.
 SoR stores **who approved it and when**.
+
+> **Boundary note:** ROSIE defines the *interface* to Systems of Record, not the SoR itself. Any QMS, PLM, or custom approval system that implements the ROSIE API contract (RFC-004) can serve as the SoR. Approval workflows, user management, and audit storage are the SoR's responsibility.
 
 ---
 

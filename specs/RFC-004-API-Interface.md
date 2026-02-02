@@ -2,16 +2,43 @@
 
 ## Metadata
 
-| Field  | Value                                                                        |
-| ------ | ---------------------------------------------------------------------------- |
-| RFC ID | 004                                                                          |
-| Title  | ROSIE API Interface: Standard Contract for System of Record Interoperability |
-| Status | Draft                                                                        |
-| Focus  | API contracts, REST/gRPC, authentication, webhooks                           |
+| Field   | Value                                                                        |
+| ------- | ---------------------------------------------------------------------------- |
+| RFC ID  | 004                                                                          |
+| Title   | ROSIE API Interface: Standard Contract for System of Record Interoperability |
+| Version | 1.1.0                                                                        |
+| Status  | Draft                                                                        |
+| Focus   | API contracts, REST/gRPC, authentication, webhooks                           |
 
 ## 1. Scope
 
 This RFC defines the RESTful API contract that any System of Record (SoR) must implement to support the ROSIE Engine. This prevents vendor lock-in and enables cross-platform compliance synchronization.
+
+### 1.1 Purpose
+
+ROSIE does not prescribe a specific SoR implementation. Instead, this RFC defines the **interface contract** that any SoR must fulfill. Compliant SoRs may include:
+
+- Commercial QMS platforms (with adapter/plugin)
+- PLM systems (with API gateway)
+- Custom-built approval applications
+- Regulatory SaaS products
+
+### 1.2 What the SoR provides
+
+The SoR is responsible for functionality outside ROSIE's boundary:
+
+| Capability | Description |
+|------------|-------------|
+| User management | Authentication, roles, permissions |
+| Approval workflows | Configurable approval chains, delegation, escalation |
+| Electronic signatures | 21 CFR Part 11 compliant signature capture and storage |
+| Audit trail | Immutable, timestamped record of all actions |
+| Retention | Long-term storage per regulatory requirements |
+| Notifications | Email, Slack, or other alerting mechanisms |
+
+### 1.3 What this RFC defines
+
+This RFC specifies only the API endpoints the ROSIE Engine calls. How the SoR implements these endpoints internally is outside scope.
 
 ## 2. Core endpoints
 

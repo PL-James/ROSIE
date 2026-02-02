@@ -4,18 +4,48 @@ title: "RFC-002: Engine Spec"
 description: Functional requirements for GxP sync and validation tools — the Integrity Guard
 ---
 
-| Field  | Value                                                                   |
-| ------ | ----------------------------------------------------------------------- |
-| RFC ID | 002                                                                     |
-| Title  | ROSIE Engine: Functional Requirements for GxP Sync and Validation Tools |
-| Status | Draft                                                                   |
-| Focus  | Tool qualification, AI protocols, release gates, sync logic             |
+| Field   | Value                                                                   |
+| ------- | ----------------------------------------------------------------------- |
+| RFC ID  | 002                                                                     |
+| Title   | ROSIE Engine: Functional Requirements for GxP Sync and Validation Tools |
+| Version | 1.1.0                                                                   |
+| Status  | Draft                                                                   |
+| Focus   | Tool qualification, release gates, sync logic, SoR interface            |
 
 ---
 
 ## 1. Scope
 
 This RFC defines the functional requirements for the ROSIE Engine, the automated software orchestrator responsible for extracting [RFC-001](/ROSIE/specs/rfc-001/) data, maintaining Dual-Ledger synchronization with a System of Record (SoR), and enforcing regulatory gates within the CI/CD pipeline.
+
+### 1.1 ROSIE Engine Responsibilities
+
+The engine is responsible for:
+
+- Parsing repositories to extract `@gxp-` annotations ([RFC-001](/ROSIE/specs/rfc-001/))
+- Building and validating the trace graph
+- Computing deterministic manifest hashes
+- Communicating with the SoR via the API contract ([RFC-004](/ROSIE/specs/rfc-004/))
+- Enforcing release gates in CI/CD pipelines
+- Generating evidence packages ([RFC-003](/ROSIE/specs/rfc-003/))
+
+### 1.2 System of Record Responsibilities (Out of Scope)
+
+The SoR is a separate system that implements [RFC-004](/ROSIE/specs/rfc-004/). The SoR handles:
+
+- User authentication and authorization
+- Approval workflows (sequential, parallel, role-based)
+- Electronic signature capture (21 CFR Part 11 compliant)
+- Audit trail storage and retention
+- Notification and escalation
+
+ROSIE defines the *interface* to the SoR, not the SoR implementation itself.
+
+### 1.3 Implementation Flexibility
+
+This specification is **platform-agnostic**. Compliant engines may be implemented as CLI tools, CI/CD plugins (GitHub Actions, GitLab CI, Jenkins, Azure DevOps, etc.), IDE extensions, or standalone services.
+
+Key management, secret storage, and cryptographic implementations are environment-specific and outside this specification.
 
 ---
 

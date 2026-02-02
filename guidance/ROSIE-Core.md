@@ -8,9 +8,10 @@ The "Validation-as-Code" Framework for Regulated Software Engineering
 
 | Field             | Value                                                              |
 | ----------------- | ------------------------------------------------------------------ |
-| Framework Version | 1.0.0                                                              |
+| Framework Version | 1.1.0                                                              |
 | Principles        | GAMP 5 (2nd Ed), CSA (Critical Thinking), 21 CFR Part 11, Annex 11 |
 | Philosophy        | Native Compliance, Dual-Ledger, Self-Validating                    |
+| Scope             | Connected environments (air-gapped deployments out of scope)       |
 
 ## 1. Basic premise
 
@@ -45,6 +46,33 @@ ROSIE operates on the principle that intent lives in Git, but approval lives in 
 - SoR ledger: Contains the "who," the signature, and the audit evidence.
 - Handshake: A cryptographic manifest hash (RFC-002) ensures the SoR only approves a specific, immutable repo state.
 
+### 3.1 ROSIE boundary (what's in scope)
+
+ROSIE defines:
+
+- **Data formats**: How to tag code and structure requirements (RFC-001)
+- **Hash computation**: How to generate deterministic integrity fingerprints (RFC-002)
+- **Evidence schema**: How to package test execution artifacts (RFC-003)
+- **API contract**: The interface any SoR must implement (RFC-004)
+- **Qualification protocol**: How to validate a ROSIE-compliant engine (RFC-005)
+
+### 3.2 SoR responsibility (what's out of scope)
+
+The System of Record is responsible for:
+
+- **User authentication and authorization**: Who can approve what
+- **Approval workflows**: Sequential, parallel, role-based, or custom
+- **Electronic signatures**: 21 CFR Part 11 compliant signature capture
+- **Audit trail storage**: Immutable record retention
+- **Notification and escalation**: Alerting stakeholders of pending approvals
+
+Any system that implements RFC-004's API contract can serve as the SoR: commercial QMS platforms, PLM systems, or custom-built approval applications.
+
+### 3.3 Out of scope
+
+- **Air-gapped environments**: ROSIE assumes network connectivity between the CI/CD pipeline and the SoR
+- **Offline approval workflows**: All approvals must be recorded in the SoR before release gates can pass
+
 ## 4. Validation models
 
 ### 4.1 Point-in-time (milestone) validation
@@ -68,7 +96,48 @@ For modern CI/CD, ROSIE enables a living validation state:
 - GAMP 5 (V-model): ROSIE provides the vertical and horizontal links of the V-model in real time.
 - CSA (Computer Software Assurance): ROSIE uses AI agents (RFC-002) to highlight high-risk changes, allowing humans to focus on approvals for critical logic.
 
-## 6. The "Watchdog" (self-validation)
+## 6. Multi-repository products
+
+Many GxP products span multiple repositories (e.g., shared libraries, microservices, frontend/backend splits). ROSIE supports this through product composition.
+
+### 6.1 Product manifest linking
+
+The root product declares its dependencies in `gxp-product.md`:
+
+```yaml
+product_name: "LabData-Platform"
+product_code: "LDP"
+composition:
+  - repo: "github.com/org/labdata-core"
+    product_code: "LDC"
+    version_constraint: "^2.0.0"
+  - repo: "github.com/org/labdata-auth"
+    product_code: "LDA"
+    version_constraint: "^1.5.0"
+```
+
+### 6.2 Aggregated traceability
+
+When validating a composed product:
+
+1. Each sub-repository must have a valid Release Readiness Token (RRT) for its declared version
+2. The root product's trace graph includes edges to sub-repository requirement nodes
+3. The manifest hash incorporates sub-repository hashes (see RFC-002 for ordering rules)
+
+### 6.3 Cross-repository tracing
+
+Requirements can trace across repository boundaries using fully-qualified IDs:
+
+```python
+# @gxp-id: LDP-DS-001
+# @gxp-traces: LDC-FRS-101, LDA-URS-005
+```
+
+The engine resolves these references by fetching the linked repository's manifest at the pinned version.
+
+---
+
+## 7. The "Watchdog" (self-validation)
 
 As defined in RFC-005, the framework is self-validating. The tool that generates compliance evidence must prove its own integrity (via recursive self-tests) during every execution, ensuring the evidence has not been tampered with or corrupted by the tool itself.
 

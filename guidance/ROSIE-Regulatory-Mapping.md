@@ -1,6 +1,26 @@
 # ROSIE: Regulatory and QA Mapping Guide
 
+**Version:** 1.1.0
+
 This guide translates traditional GxP compliance milestones into the ROSIE framework components. It is designed for QA, Regulatory Affairs, and auditors to understand how digital evidence replaces paper artifacts.
+
+---
+
+## Understanding ROSIE's Boundary
+
+ROSIE is a **specification**, not a complete system. It defines:
+
+- How to structure compliance artifacts in code repositories
+- How to compute integrity hashes
+- The API contract for approval systems
+
+Your organization's **System of Record (SoR)** handles:
+
+- User authentication and authorization
+- Approval workflows and electronic signatures
+- Audit trail storage and retention
+
+Any QMS, PLM, or custom system that implements the ROSIE API (RFC-004) can serve as the SoR.
 
 ## 1. Traditional vs. ROSIE mapping
 
