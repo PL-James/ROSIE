@@ -1,0 +1,50 @@
+{
+  "execution_id": "demo-exec-001",
+  "commit_sha": "abc123def456",
+  "environment": "Ubuntu 22.04, Node 20.x",
+  "executed_at": "2026-02-02T10:30:00Z",
+  "results": [
+    {
+      "gxp_id": "REF-OQ-001",
+      "name": "JWT Token Unit Tests",
+      "status": "passed",
+      "duration_ms": 45,
+      "logs": [
+        "> should generate a valid JWT token ✓",
+        "> should include correct claims in token ✓",
+        "> should set correct expiration time ✓",
+        "> should validate a valid token ✓",
+        "> should reject an invalid token ✓",
+        "> should reject a tampered token ✓",
+        "> should reject malformed tokens ✓"
+      ]
+    },
+    {
+      "gxp_id": "REF-OQ-002",
+      "name": "SHA-256 Checksum Unit Tests",
+      "status": "passed",
+      "duration_ms": 32,
+      "logs": [
+        "> should calculate consistent checksums ✓",
+        "> should produce 64-character hex string ✓",
+        "> should produce different checksums for different data ✓",
+        "> should handle nested objects ✓",
+        "> should create a record with checksum ✓",
+        "> should verify valid checksum ✓",
+        "> should detect corrupted data ✓",
+        "> should detect tampered checksum ✓"
+      ]
+    },
+    {
+      "gxp_id": "REF-PQ-001",
+      "name": "Full Workflow E2E Test",
+      "status": "passed",
+      "duration_ms": 1200,
+      "logs": [
+        "> should complete authentication and data integrity workflow ✓",
+        "> should detect integrity violation in workflow ✓",
+        "> should maintain session throughout workflow ✓"
+      ]
+    }
+  ]
+}
