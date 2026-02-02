@@ -108,10 +108,38 @@ export interface DataRecord {
 }
 
 /**
+ * Deterministically serialize a value with sorted object keys (recursive)
+ */
+function deterministicSerialize(value: unknown): string {
+  if (value === null || value === undefined) {
+    return JSON.stringify(value);
+  }
+
+  if (typeof value !== 'object') {
+    return JSON.stringify(value);
+  }
+
+  if (Array.isArray(value)) {
+    const items = value.map(item => deterministicSerialize(item));
+    return '[' + items.join(',') + ']';
+  }
+
+  // Object: sort keys and recurse
+  const obj = value as Record<string, unknown>;
+  const sortedKeys = Object.keys(obj).sort();
+  const pairs = sortedKeys.map(key => {
+    const serializedKey = JSON.stringify(key);
+    const serializedValue = deterministicSerialize(obj[key]);
+    return serializedKey + ':' + serializedValue;
+  });
+  return '{' + pairs.join(',') + '}';
+}
+
+/**
  * Calculate SHA-256 checksum for data
  */
 export function calculateChecksum(data: unknown): string {
-  const serialized = JSON.stringify(data, Object.keys(data as object).sort());
+  const serialized = deterministicSerialize(data);
   return createHash('sha256').update(serialized).digest('hex');
 }
 

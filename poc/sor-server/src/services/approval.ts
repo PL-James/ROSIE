@@ -9,7 +9,7 @@ import {
 } from '../db/sqlite.js';
 
 export interface ApprovalResult {
-  node: Node;
+  node: Node | null;
   success: boolean;
   message: string;
 }
@@ -18,7 +18,7 @@ export function approveNode(nodeId: string, approvedBy: string, comment?: string
   const node = getNodeById(nodeId);
   if (!node) {
     return {
-      node: null as unknown as Node,
+      node: null,
       success: false,
       message: 'Node not found'
     };
@@ -58,7 +58,7 @@ export function rejectNode(nodeId: string, rejectedBy: string, reason: string): 
   const node = getNodeById(nodeId);
   if (!node) {
     return {
-      node: null as unknown as Node,
+      node: null,
       success: false,
       message: 'Node not found'
     };
@@ -95,7 +95,7 @@ export function approveAllPending(manifestId: string, approvedBy: string): {
 
   for (const node of pending) {
     const result = approveNode(node.id, approvedBy);
-    if (result.success) {
+    if (result.success && result.node) {
       approved.push(result.node);
     }
   }

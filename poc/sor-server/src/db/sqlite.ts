@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import { createHash } from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
 const dbPath = process.env.DATABASE_PATH || './rosie.db';
@@ -112,15 +113,10 @@ export interface AuditEntry {
   payload_hash: string;
 }
 
-// Helper to compute simple hash
+// Helper to compute SHA-256 hash
 function computeHash(data: string): string {
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return 'sha256:' + Math.abs(hash).toString(16).padStart(16, '0');
+  const hex = createHash('sha256').update(data, 'utf8').digest('hex');
+  return 'sha256:' + hex;
 }
 
 // Audit logging

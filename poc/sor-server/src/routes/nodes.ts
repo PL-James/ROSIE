@@ -37,6 +37,30 @@ router.get('/', (_req: Request, res: Response) => {
   }
 });
 
+// GET /v1/nodes/status/approvals - Get approval status
+// IMPORTANT: This route must be defined before /:id to avoid being shadowed
+router.get('/status/approvals', (_req: Request, res: Response) => {
+  try {
+    const manifest = getLatestManifest();
+    if (!manifest) {
+      res.status(404).json({ error: 'No manifest found' });
+      return;
+    }
+
+    const status = getApprovalStatus(manifest.id);
+    res.json({
+      manifest_id: manifest.id,
+      ...status
+    });
+  } catch (error) {
+    console.error('Get approval status error:', error);
+    res.status(500).json({
+      error: 'Failed to get approval status',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 // GET /v1/nodes/:id - Get a specific node
 router.get('/:id', (req: Request, res: Response) => {
   try {
@@ -110,29 +134,6 @@ router.post('/:id/reject', (req: Request, res: Response) => {
     console.error('Reject node error:', error);
     res.status(500).json({
       error: 'Failed to reject node',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
-// GET /v1/nodes/status/approvals - Get approval status
-router.get('/status/approvals', (_req: Request, res: Response) => {
-  try {
-    const manifest = getLatestManifest();
-    if (!manifest) {
-      res.status(404).json({ error: 'No manifest found' });
-      return;
-    }
-
-    const status = getApprovalStatus(manifest.id);
-    res.json({
-      manifest_id: manifest.id,
-      ...status
-    });
-  } catch (error) {
-    console.error('Get approval status error:', error);
-    res.status(500).json({
-      error: 'Failed to get approval status',
       details: error instanceof Error ? error.message : 'Unknown error'
     });
   }

@@ -416,7 +416,7 @@ Gate Conditions:
   ✓ All tests passed (3/3)
 
 Release Readiness Token:
-  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  <RRT_PLACEHOLDER_DO_NOT_USE>
 ```
 
 **The RRT is your proof** that this commit is validated and ready to deploy.
@@ -437,7 +437,7 @@ Every action is recorded with:
 - Details
 - Cryptographic hash for tamper-evidence
 
-This is your **21 CFR Part 11 compliant audit trail**.
+This illustrates audit-trail features commonly required by **21 CFR Part 11**.
 
 ---
 

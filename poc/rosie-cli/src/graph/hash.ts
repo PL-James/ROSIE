@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import type { TraceGraph } from './builder.js';
 
 export function computeManifestHash(graph: TraceGraph): string {
@@ -12,14 +13,8 @@ export function computeManifestHash(graph: TraceGraph): string {
     version: graph.version,
   });
 
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-
-  return 'sha256:' + Math.abs(hash).toString(16).padStart(16, '0');
+  const hex = createHash('sha256').update(data, 'utf8').digest('hex');
+  return 'sha256:' + hex;
 }
 
 export function verifyManifestHash(graph: TraceGraph, expectedHash: string): boolean {

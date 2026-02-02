@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import ReactFlow, {
   Node as FlowNode,
   Edge as FlowEdge,
@@ -134,7 +134,7 @@ export function GraphView({ nodes, edges, onNodeClick }: GraphViewProps) {
   const [flowEdges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   // Update nodes when data changes
-  useMemo(() => {
+  useEffect(() => {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
       nodes.map((node) => ({
         id: node.id,

@@ -9,11 +9,11 @@ services:
     environment:
       - PORT=3000
       - DATABASE_PATH=/data/rosie.db
-      - API_KEY=demo-key
+      - API_KEY=${API_KEY:-demo-key}
     volumes:
       - sor-data:/data
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      test: ["CMD", "/bin/sh", "-c", "curl -fsS http://localhost:3000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
