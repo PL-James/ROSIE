@@ -1,1 +1,49 @@
-ROSIE: Regulatory & QA Mapping GuideThis guide translates traditional GxP (Good Practice) compliance milestones into the ROSIE Framework components. It is designed for Quality Assurance (QA), Regulatory Affairs (RA), and Auditors to understand how digital evidence replaces paper artifacts.1. The Traditional vs. ROSIE MappingTraditional GxP DeliverableROSIE Digital EquivalentWhy this is better for ComplianceUser Requirements (URS)specs/urs/*.mdLiving Specs: Requirements are version-controlled alongside the code. No "final_v2_signed.docx" confusion.Functional/Design Specs (FRS/DS)specs/ds/*.md & @gxp-idDirect Links: The design is physically part of the code. Auditors can see exactly which line of code satisfies a spec.Traceability Matrix (RTM)ROSIE Graph (Auto-generated)Real-time Accuracy: Traditional RTMs are manual and prone to error. ROSIE RTMs are mathematically derived and never drift.Test Protocols (IQ/OQ/PQ)tests/ with @gxp-typeAutomated Execution: Tests are run every time code changes, ensuring a perpetual state of qualification.Validation Summary Reportgxp-execution.jsonImmutable Evidence: Contains raw logs, hashes, and screenshots that cannot be retroactively "fudged."Handwritten SignaturesSoR E-SignaturesPart 11 Compliant: Signatures are cryptographically linked to a specific code version (Git Hash).2. Navigating the "Audit Trail"In a traditional audit, you look at a binder. In a ROSIE-enabled audit, you look at the Dual-Ledger:Step 1: Prove the Intent (The Repo)The auditor asks: "Where did you say the system would do X?"The Answer: Look at the Markdown file in the /specs folder. The Git history proves when it was written and who wrote it.Step 2: Prove the Design (The Code)The auditor asks: "How did you implement that requirement?"The Answer: The ROSIE Engine follows the @gxp-id tag from the Requirement document directly to the specific function in the source code.Step 3: Prove the Verification (The Evidence)The auditor asks: "How do I know this actually works?"The Answer: Look at the gxp-execution.json. It shows the test passed, provides a screenshot of the result, and includes a "Release Readiness Token" showing QA approved the build.3. "Hard-Gate" vs. Traditional "Go-Live"Traditional "Go-Live"ROSIE "Hard-Gate"Human Check: A person checks a folder to see if all documents are signed.Digital Check: The system blocks deployment if even one signature is missing or a hash is mismatched.Point-in-Time: Validation is a snapshot of how the system worked last month.Continuous: Validation is a live status of how the system works right now.High Friction: Releases take weeks while paperwork is "routed."Low Friction: Releases take minutes because the "paperwork" was generated during development.4. Addressing GAMP 5 & CSA PrinciplesCritical Thinking (CSA): Instead of QA checking every single line of a document for typos, ROSIE's AI Agent identifies high-risk changes (e.g., security or data integrity logic). QA can then focus 100% of their "Critical Thinking" on those specific areas.Fitness for Purpose: Because ROSIE is Self-Validating, it proves it is working correctly every single time it runs. This provides a higher level of assurance than a one-time "Tool Validation" performed three years ago.5. Summary for AuditorsROSIE provides 21 CFR Part 11 compliance by ensuring:Integrity: The Manifest Hash prevents undetected changes to validated code.Traceability: Every requirement is digitally linked to code and tests.Accountability: Every approval is a timestamped, cryptographically-secure electronic signature.
+# ROSIE: Regulatory and QA Mapping Guide
+
+This guide translates traditional GxP compliance milestones into the ROSIE framework components. It is designed for QA, Regulatory Affairs, and auditors to understand how digital evidence replaces paper artifacts.
+
+## 1. Traditional vs. ROSIE mapping
+
+| Traditional GxP deliverable      | ROSIE digital equivalent      | Why this is better for compliance                                 |
+| -------------------------------- | ----------------------------- | ----------------------------------------------------------------- |
+| User Requirements (URS)          | `specs/urs/*.md`              | Living specs: requirements are version-controlled alongside code. |
+| Functional/Design Specs (FRS/DS) | `specs/ds/*.md` and `@gxp-id` | Direct links: the design is part of the code.                     |
+| Traceability Matrix (RTM)        | ROSIE graph (auto-generated)  | Real-time accuracy: derived from code, no manual drift.           |
+| Test Protocols (IQ/OQ/PQ)        | `tests/` with `@gxp-type`     | Automated execution: tests run on every change.                   |
+| Validation Summary Report        | `gxp-execution.json`          | Immutable evidence: logs, hashes, and screenshots.                |
+| Handwritten signatures           | SoR e-signatures              | Part 11 compliant: signatures are linked to a specific Git hash.  |
+
+## 2. Navigating the audit trail
+
+In a traditional audit, you look at a binder. In a ROSIE-enabled audit, you look at the Dual-Ledger.
+
+1. Prove the intent (the repo)
+   - Auditor question: "Where did you say the system would do X?"
+   - Answer: The Markdown file in `/specs`. Git history shows who wrote it and when.
+2. Prove the design (the code)
+   - Auditor question: "How did you implement that requirement?"
+   - Answer: The ROSIE Engine follows the `@gxp-id` tag to the exact function in code.
+3. Prove the verification (the evidence)
+   - Auditor question: "How do I know this actually works?"
+   - Answer: The `gxp-execution.json` shows test results, evidence attachments, and the RRT.
+
+## 3. Hard-Gate vs. traditional "go-live"
+
+| Traditional "go-live"                                    | ROSIE Hard-Gate                                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Human check: a person verifies signed documents.         | Digital check: deployment is blocked if any signature or hash is missing.        |
+| Point-in-time: validation is a snapshot from last month. | Continuous: validation is a live status of the current build.                    |
+| High friction: releases wait on paperwork routing.       | Low friction: releases proceed because evidence is generated during development. |
+
+## 4. Addressing GAMP 5 and CSA principles
+
+- Critical thinking (CSA): The AI agent flags high-risk changes (e.g., security, data integrity), so QA focuses on the most important areas.
+- Fitness for purpose: Self-validation proves the tool works correctly on every run, not just during a one-time validation.
+
+## 5. Summary for auditors
+
+ROSIE supports 21 CFR Part 11 compliance by ensuring:
+
+- Integrity: The manifest hash prevents undetected changes to validated code.
+- Traceability: Every requirement is digitally linked to code and tests.
+- Accountability: Every approval is a timestamped, cryptographically secure e-signature.

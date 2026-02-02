@@ -1,21 +1,23 @@
-RFC-001: ROSIE Data Standard (The "Truth-in-Repo" Schema)
+# RFC-001: ROSIE Data Standard ("Truth-in-Repo" Schema)
 
-| Field | Value |
-| --- | --- |
-| RFC ID | 001 |
-| Title | ROSIE Data Standard: Schema for GxP Traceability in Source Control |
-| Status | Draft |
-| Focus | Data Structures, Tagging Syntax, Manifest Schema |
+## Metadata
 
-1. Scope
+| Field  | Value                                                              |
+| ------ | ------------------------------------------------------------------ |
+| RFC ID | 001                                                                |
+| Title  | ROSIE Data Standard: Schema for GxP Traceability in Source Control |
+| Status | Draft                                                              |
+| Focus  | Data structures, tagging syntax, manifest schema                   |
 
-This RFC defines the universal syntax and structure for embedding GxP (Good Practice) validation metadata within Git repositories. It establishes the "Truth-in-Repo" protocol, ensuring that any ROSIE-compliant engine can parse a repository to reconstruct a multidimensional traceability graph spanning requirements, design, and verification.
+## 1. Scope
 
-2. The Repository Manifest (gxp-product.md)
+This RFC defines the universal syntax and structure for embedding GxP (Good Practice) validation metadata within Git repositories. It establishes the Truth-in-Repo protocol, ensuring that any ROSIE-compliant engine can parse a repository to reconstruct a multidimensional traceability graph spanning requirements, design, and verification.
 
-Every compliant repository must contain a YAML-frontmatter manifest at the root. This file establishes the regulatory boundaries and the namespace for all IDs.
+## 2. Repository manifest (`gxp-product.md`)
 
-2.1 Schema Definition
+Every compliant repository must contain a YAML front matter manifest at the root. This file establishes the regulatory boundaries and namespace for all IDs.
+
+### 2.1 Schema definition
 
 ```yaml
 product_name: "LabData-Processor-Core"
@@ -33,11 +35,11 @@ gxp_metadata:
   risk_impact: "High"
 ```
 
-3. Requirement Schema (Markdown)
+## 3. Requirement schema (Markdown)
 
-Requirements are authored in .md files located within a /specs or /docs directory. ROSIE-compliant engines must parse the Markdown Abstract Syntax Tree (AST) to extract traceable nodes.
+Requirements are authored in `.md` files within a `/specs` or `/docs` directory. ROSIE-compliant engines parse the Markdown AST to extract traceable nodes.
 
-3.1 Header Formatting
+### 3.1 Header formatting
 
 Every traceable requirement must follow the bracketed ID pattern in the header:
 
@@ -45,40 +47,43 @@ Every traceable requirement must follow the bracketed ID pattern in the header:
 ## [ID] Title
 ```
 
-3.2 Metadata Block
+### 3.2 Metadata block
 
-Directly beneath the header, a YAML block enclosed in --- is mandatory for synchronization with the System of Record (SoR).
+Directly beneath the header, a YAML block enclosed in `---` is mandatory for synchronization with the System of Record (SoR).
 
 ```md
 ## [LDPC-URS-101] Data Integrity Check
+
 ---
+
 sor_id: "urs:8c0b-ff21"
 status: "Approved"
 approved_by: "qa_lead@example.com"
 approved_at: "2026-02-01T10:00:00Z"
 risk_level: "High"
 gxp_type: "Part11-Audit"
+
 ---
 
 The system shall verify the checksum of every incoming JSON payload.
 ```
 
-4. Annotation Syntax (Source Code)
+## 4. Annotation syntax (source code)
 
-Annotations are language-agnostic comments. The engine must support standard comment delimiters (e.g., #, //, /* */, /** */).
+Annotations are language-agnostic comments. The engine must support standard comment delimiters (e.g., `#`, `//`, `/* */`, `/** */`).
 
-4.1 Tag Definition Table
+### 4.1 Tag definition table
 
-| Tag | Format | Description |
-| --- | --- | --- |
-| @gxp-id | STRING | The unique ID of the specific code block or test. |
-| @gxp-traces | CSV<ID> | References to parent IDs (e.g., FRS or DS). |
-| @gxp-type | ENUM | Category: DS (Design), IQ, OQ, PQ. |
-| @gxp-desc | STRING | (Optional) Human-readable intent of the code. |
+| Tag           | Format  | Description                                   |
+| ------------- | ------- | --------------------------------------------- |
+| `@gxp-id`     | STRING  | Unique ID of the specific code block or test. |
+| `@gxp-traces` | CSV<ID> | References to parent IDs (e.g., FRS or DS).   |
+| `@gxp-type`   | ENUM    | Category: DS (Design), IQ, OQ, PQ.            |
+| `@gxp-desc`   | STRING  | Optional human-readable intent.               |
 
-4.2 Language Examples
+### 4.2 Language examples
 
-TypeScript (Functional Design):
+TypeScript (functional design):
 
 ```ts
 /**
@@ -86,44 +91,47 @@ TypeScript (Functional Design):
  * @gxp-traces: LDPC-FRS-205
  * @gxp-type: DS
  */
-export const validateChecksum = (data: string): boolean => { ... };
+export const validateChecksum = (data: string): boolean => {
+  // ...
+  return true;
+};
 ```
 
-Python (OQ Test):
+Python (OQ test):
 
 ```py
 # @gxp-id: LDPC-OQ-05
 # @gxp-traces: LDPC-DS-001
 # @gxp-type: OQ
+
 def test_checksum_failure():
-    assert validateChecksum("corrupt-data") == False
+    assert validateChecksum("corrupt-data") is False
 ```
 
-4.3 Filename Fallback Rules
+### 4.3 Filename fallback rules
 
-If explicit @gxp-type tags are missing in a test file, the engine shall infer the type based on path conventions:
+If explicit `@gxp-type` tags are missing in a test file, the engine shall infer the type based on path conventions:
 
-- /tests/unit/ or *.spec.* $\rightarrow$ OQ
-- /tests/e2e/ or /tests/pq/ $\rightarrow$ PQ
-- *.tf, Dockerfile, *.yaml $\rightarrow$ IQ
+- `/tests/unit/` or `*.spec.*` -> OQ
+- `/tests/e2e/` or `/tests/pq/` -> PQ
+- `*.tf`, `Dockerfile`, `*.yaml` -> IQ
 
-5. Taxonomy & Mathematical Mapping
+## 5. Taxonomy and mathematical mapping
 
-The ROSIE Data Standard represents traceability as a Directed Acyclic Graph (DAG) $G = (V, E)$.
+The ROSIE data standard represents traceability as a directed acyclic graph (DAG), `G = (V, E)`.
 
-5.1 Entity Mapping
+### 5.1 Entity mapping
 
-| Entity Name | Standard ID Pattern | RFC Entity |
-| --- | --- | --- |
-| User Requirement | {CODE}-URS-{N} | Requirement Node |
-| Functional Req | {CODE}-FRS-{N} | Requirement Node |
-| Design Spec | {CODE}-DS-{N} | Implementation Node |
-| Qualification Test | {CODE}-{IQ|OQ|PQ}-{N} | Verification Node |
+| Entity name            | Standard ID pattern      | RFC entity          |
+| ---------------------- | ---------------------- | ------------------- |
+| User Requirement       | `{CODE}-URS-{N}`       | Requirement node    |
+| Functional Requirement | `{CODE}-FRS-{N}`       | Requirement node    |
+| Design Spec            | `{CODE}-DS-{N}`        | Implementation node |
+| Qualification Test     | `{CODE}-{IQ|OQ|PQ}-{N}`| Verification node   |
 
-5.2 Edge Rules
+### 5.2 Edge rules
 
-Trace-Up: An implementation node $V_{impl}$ must have at least one edge $E$ pointing to a requirement node $V_{req}$.
-
-Verification-Link: A verification node $V_{ver}$ must have at least one edge $E$ pointing to either an implementation node or a requirement node.
+- Trace-Up: An implementation node `V_impl` must have at least one edge `E` pointing to a requirement node `V_req`.
+- Verification-Link: A verification node `V_ver` must have at least one edge `E` pointing to either an implementation node or a requirement node.
 
 Refer to RFC-002 for the engine requirements used to process and synchronize this data standard.
