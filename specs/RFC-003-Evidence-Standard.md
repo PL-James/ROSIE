@@ -1,4 +1,26 @@
-RFC-003: ROSIE Evidence Standard (Artifact Packaging)MetadataDetailsRFC ID003TitleROSIE Evidence Standard: Schema for Automated Qualification EvidenceStatusDraftFocus21 CFR Part 11 Compliance, Evidence Schemas, Immutable Logs1. ScopeThis RFC defines the structure of the gxp-execution.json artifact. It ensures that automated test outputs (OQ/PQ) are captured in a format that satisfies regulatory requirements for "Electronic Records," including environment state, visual evidence, and execution telemetry.2. Evidence Package StructureThe Evidence Package is a JSON-LD compliant object that aggregates execution metadata.2.1 The gxp-execution.json Schema{
+# RFC-003: ROSIE Evidence Standard (Artifact Packaging)
+
+## Metadata
+
+| Field  | Value                                                                |
+| ------ | -------------------------------------------------------------------- |
+| RFC ID | 003                                                                  |
+| Title  | ROSIE Evidence Standard: Schema for Automated Qualification Evidence |
+| Status | Draft                                                                |
+| Focus  | 21 CFR Part 11 compliance, evidence schemas, immutable logs          |
+
+## 1. Scope
+
+This RFC defines the structure of the `gxp-execution.json` artifact. It ensures that automated test outputs (OQ/PQ) are captured in a format that satisfies regulatory requirements for electronic records, including environment state, visual evidence, and execution telemetry.
+
+## 2. Evidence package structure
+
+The evidence package is a JSON-LD compliant object that aggregates execution metadata.
+
+### 2.1 `gxp-execution.json` schema
+
+```json
+{
   "execution_id": "uuid-v4",
   "timestamp": "ISO-8601",
   "commit_sha": "git-sha",
@@ -29,4 +51,12 @@ RFC-003: ROSIE Evidence Standard (Artifact Packaging)MetadataDetailsRFC ID003Tit
     "value": "..."
   }
 }
-3. Evidence Collection RulesVisual Evidence (MUST): For PQ tests involving a UI, at least one screenshot of the terminal state or success criteria must be captured.Log Sanitization (SHOULD): The engine must scrub PII or secrets from logs before attachment.Immutability (MUST): Once generated, the Evidence Package must be hashed. This hash is then sent to the SoR for permanent archival.Refer to RFC-002 for the engine logic that triggers this evidence capture.
+```
+
+## 3. Evidence collection rules
+
+- Visual evidence (MUST): For PQ tests involving a UI, capture at least one screenshot of the terminal state or success criteria.
+- Log sanitization (SHOULD): Scrub PII or secrets from logs before attachment.
+- Immutability (MUST): Once generated, the evidence package must be hashed; the hash is sent to the SoR for permanent archival.
+
+Refer to RFC-002 for the engine logic that triggers evidence capture.
