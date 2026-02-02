@@ -122,12 +122,12 @@ The ROSIE data standard represents traceability as a directed acyclic graph (DAG
 
 ### 5.1 Entity mapping
 
-| Entity name            | Standard ID pattern | RFC entity          |
-| ---------------------- | ------------------- | ------------------- | -------- | ----------------- |
-| User Requirement       | `{CODE}-URS-{N}`    | Requirement node    |
-| Functional Requirement | `{CODE}-FRS-{N}`    | Requirement node    |
-| Design Spec            | `{CODE}-DS-{N}`     | Implementation node |
-| Qualification Test     | `{CODE}-{IQ         | OQ                  | PQ}-{N}` | Verification node |
+| Entity name            | Standard ID pattern      | RFC entity          |
+| ---------------------- | ---------------------- | ------------------- |
+| User Requirement       | `{CODE}-URS-{N}`       | Requirement node    |
+| Functional Requirement | `{CODE}-FRS-{N}`       | Requirement node    |
+| Design Spec            | `{CODE}-DS-{N}`        | Implementation node |
+| Qualification Test     | `{CODE}-{IQ|OQ|PQ}-{N}`| Verification node   |
 
 ### 5.2 Edge rules
 
