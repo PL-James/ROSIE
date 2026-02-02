@@ -1,0 +1,38 @@
+<header class="site-header">
+  <div class="header-container">
+    <a href="{{ '/' | relative_url }}" class="site-logo">
+      <span class="logo-icon">R</span>
+      <span class="logo-text">ROSIE</span>
+    </a>
+
+    <button class="nav-toggle" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav class="nav-menu">
+      {% for item in site.nav %}
+      <div class="nav-item {% if item.children %}has-children{% endif %}">
+        <a href="{{ item.url | relative_url }}" {% if page.url == item.url %}class="active"{% endif %}>
+          {{ item.title }}
+          {% if item.children %}
+          <svg class="dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M3 5L6 8L9 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          {% endif %}
+        </a>
+        {% if item.children %}
+        <div class="nav-dropdown">
+          {% for child in item.children %}
+          <a href="{{ child.url | relative_url }}" {% if page.url == child.url %}class="active"{% endif %}>
+            {{ child.title }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,72 @@
+# ROSIE Documentation Site
+# Jekyll configuration
+
+title: ROSIE
+description: Repo-Oriented Secure Integrity Engine — Compliance as Code for GxP Systems
+url: ""
+baseurl: ""
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false
+
+# Collections
+collections:
+  specs:
+    output: true
+    permalink: /specs/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+  - scope:
+      path: "specs"
+      type: "specs"
+    values:
+      layout: "page"
+
+# Navigation
+nav:
+  - title: Home
+    url: /
+  - title: Core
+    url: /core/
+  - title: Specs
+    url: /specs/
+    children:
+      - title: "RFC-001: Data Standard"
+        url: /specs/rfc-001/
+      - title: "RFC-002: Engine Spec"
+        url: /specs/rfc-002/
+      - title: "RFC-003: Evidence Standard"
+        url: /specs/rfc-003/
+      - title: "RFC-004: API Interface"
+        url: /specs/rfc-004/
+      - title: "RFC-005: TQ Baseline"
+        url: /specs/rfc-005/
+  - title: Regulatory Guide
+    url: /regulatory/
+  - title: Reference
+    url: /reference/
+
+# Exclude files
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md
+  - license.md
+  - guidance/
+  - reference-implementation/
