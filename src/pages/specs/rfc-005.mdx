@@ -85,7 +85,7 @@ To achieve self-validating status, the ROSIE Engine must perform recursive verif
 
 ### 4.2 Automated Deviation Reporting
 
-- **Auto-log**: Any failure of the Hard-Gate ([RFC-002](/ROSIE/specs/rfc-002/)) must automatically generate a deviation report in the SoR
+- **Auto-log**: Any failure of the Hard-Gate ([RFC-002](/specs/rfc-002/)) must automatically generate a deviation report in the SoR
 - **Root cause tagging**: The AI agent identifies which requirements (URS/FRS) are breached by the current code state
 
 ---
@@ -119,14 +119,14 @@ To pass OQ, a ROSIE Engine must achieve:
 | ------ | -------------------------- | ----------------------------- |
 | Commit | Sync and semantic check    | Proposed trace graph          |
 | Build  | Engine self-test           | Tool health certificate       |
-| Test   | Evidence capture ([RFC-003](/ROSIE/specs/rfc-003/)) | Execution evidence (JSON)     |
+| Test   | Evidence capture ([RFC-003](/specs/rfc-003/)) | Execution evidence (JSON)     |
 | Merge  | Hard-Gate RRT issue        | Automated release certificate |
 
 ---
 
 ## Related RFCs
 
-- [RFC-001: Data Standard](/ROSIE/specs/rfc-001/) — Tag patterns validated by the Golden Repository
-- [RFC-002: Engine Spec](/ROSIE/specs/rfc-002/) — Engine behavior qualified by OQ/PQ
-- [RFC-003: Evidence Standard](/ROSIE/specs/rfc-003/) — Evidence format for qualification tests
-- [RFC-004: API Interface](/ROSIE/specs/rfc-004/) — API endpoints used during qualification
+- [RFC-001: Data Standard](/specs/rfc-001/) — Tag patterns validated by the Golden Repository
+- [RFC-002: Engine Spec](/specs/rfc-002/) — Engine behavior qualified by OQ/PQ
+- [RFC-003: Evidence Standard](/specs/rfc-003/) — Evidence format for qualification tests
+- [RFC-004: API Interface](/specs/rfc-004/) — API endpoints used during qualification

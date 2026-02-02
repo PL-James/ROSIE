@@ -2,8 +2,8 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 
 export default defineConfig({
-  site: 'https://pl-james.github.io',
-  base: '/ROSIE',
+  site: 'https://rosie-docs.pages.dev',
+  base: '/',
   integrations: [mdx()],
   markdown: {
     shikiConfig: {

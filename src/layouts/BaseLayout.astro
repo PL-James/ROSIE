@@ -11,21 +11,21 @@ const { title, description = 'Compliance as Code for GxP Systems', showSidebar =
 const currentPath = Astro.url.pathname;
 
 const nav = [
-  { title: 'Home', url: '/ROSIE/' },
-  { title: 'Core', url: '/ROSIE/core/' },
+  { title: 'Home', url: '/' },
+  { title: 'Core', url: '/core/' },
   {
     title: 'Specs',
-    url: '/ROSIE/specs/',
+    url: '/specs/',
     children: [
-      { title: 'RFC-001: Data Standard', url: '/ROSIE/specs/rfc-001/' },
-      { title: 'RFC-002: Engine Spec', url: '/ROSIE/specs/rfc-002/' },
-      { title: 'RFC-003: Evidence Standard', url: '/ROSIE/specs/rfc-003/' },
-      { title: 'RFC-004: API Interface', url: '/ROSIE/specs/rfc-004/' },
-      { title: 'RFC-005: TQ Baseline', url: '/ROSIE/specs/rfc-005/' },
+      { title: 'RFC-001: Data Standard', url: '/specs/rfc-001/' },
+      { title: 'RFC-002: Engine Spec', url: '/specs/rfc-002/' },
+      { title: 'RFC-003: Evidence Standard', url: '/specs/rfc-003/' },
+      { title: 'RFC-004: API Interface', url: '/specs/rfc-004/' },
+      { title: 'RFC-005: TQ Baseline', url: '/specs/rfc-005/' },
     ]
   },
-  { title: 'Regulatory Guide', url: '/ROSIE/regulatory/' },
-  { title: 'Reference', url: '/ROSIE/reference/' },
+  { title: 'Regulatory Guide', url: '/regulatory/' },
+  { title: 'Reference', url: '/reference/' },
 ];
 ---
 
@@ -47,7 +47,7 @@ const nav = [
 <body>
   <header class="site-header">
     <div class="header-container">
-      <a href="/ROSIE/" class="site-logo">
+      <a href="/" class="site-logo">
         <span class="logo-icon">R</span>
         <span class="logo-text">ROSIE</span>
       </a>
@@ -90,20 +90,20 @@ const nav = [
         <div class="sidebar-section">
           <h3 class="sidebar-title">Specifications</h3>
           <nav class="sidebar-nav">
-            <a href="/ROSIE/specs/" class={currentPath === '/ROSIE/specs/' ? 'active' : ''}>Overview</a>
-            <a href="/ROSIE/specs/rfc-001/" class={currentPath.includes('rfc-001') ? 'active' : ''}>
+            <a href="/specs/" class={currentPath === '/specs/' ? 'active' : ''}>Overview</a>
+            <a href="/specs/rfc-001/" class={currentPath.includes('rfc-001') ? 'active' : ''}>
               <span class="rfc-badge">001</span> Data Standard
             </a>
-            <a href="/ROSIE/specs/rfc-002/" class={currentPath.includes('rfc-002') ? 'active' : ''}>
+            <a href="/specs/rfc-002/" class={currentPath.includes('rfc-002') ? 'active' : ''}>
               <span class="rfc-badge">002</span> Engine Spec
             </a>
-            <a href="/ROSIE/specs/rfc-003/" class={currentPath.includes('rfc-003') ? 'active' : ''}>
+            <a href="/specs/rfc-003/" class={currentPath.includes('rfc-003') ? 'active' : ''}>
               <span class="rfc-badge">003</span> Evidence Standard
             </a>
-            <a href="/ROSIE/specs/rfc-004/" class={currentPath.includes('rfc-004') ? 'active' : ''}>
+            <a href="/specs/rfc-004/" class={currentPath.includes('rfc-004') ? 'active' : ''}>
               <span class="rfc-badge">004</span> API Interface
             </a>
-            <a href="/ROSIE/specs/rfc-005/" class={currentPath.includes('rfc-005') ? 'active' : ''}>
+            <a href="/specs/rfc-005/" class={currentPath.includes('rfc-005') ? 'active' : ''}>
               <span class="rfc-badge">005</span> TQ Baseline
             </a>
           </nav>
@@ -111,9 +111,9 @@ const nav = [
         <div class="sidebar-section">
           <h3 class="sidebar-title">Resources</h3>
           <nav class="sidebar-nav">
-            <a href="/ROSIE/core/" class={currentPath === '/ROSIE/core/' ? 'active' : ''}>Core Concepts</a>
-            <a href="/ROSIE/regulatory/" class={currentPath === '/ROSIE/regulatory/' ? 'active' : ''}>Regulatory Mapping</a>
-            <a href="/ROSIE/reference/" class={currentPath === '/ROSIE/reference/' ? 'active' : ''}>Reference Implementation</a>
+            <a href="/core/" class={currentPath === '/core/' ? 'active' : ''}>Core Concepts</a>
+            <a href="/regulatory/" class={currentPath === '/regulatory/' ? 'active' : ''}>Regulatory Mapping</a>
+            <a href="/reference/" class={currentPath === '/reference/' ? 'active' : ''}>Reference Implementation</a>
           </nav>
         </div>
       </aside>
@@ -132,8 +132,8 @@ const nav = [
           <span class="footer-tagline">Compliance as Code for GxP Systems</span>
         </div>
         <div class="footer-links">
-          <a href="/ROSIE/specs/">Specifications</a>
-          <a href="/ROSIE/regulatory/">Regulatory Guide</a>
+          <a href="/specs/">Specifications</a>
+          <a href="/regulatory/">Regulatory Guide</a>
           <a href="https://github.com/PL-James/ROSIE" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>

@@ -16,22 +16,22 @@ description: Functional requirements for GxP sync and validation tools — the I
 
 ## 1. Scope
 
-This RFC defines the functional requirements for the ROSIE Engine, the automated software orchestrator responsible for extracting [RFC-001](/ROSIE/specs/rfc-001/) data, maintaining Dual-Ledger synchronization with a System of Record (SoR), and enforcing regulatory gates within the CI/CD pipeline.
+This RFC defines the functional requirements for the ROSIE Engine, the automated software orchestrator responsible for extracting [RFC-001](/specs/rfc-001/) data, maintaining Dual-Ledger synchronization with a System of Record (SoR), and enforcing regulatory gates within the CI/CD pipeline.
 
 ### 1.1 ROSIE Engine Responsibilities
 
 The engine is responsible for:
 
-- Parsing repositories to extract `@gxp-` annotations ([RFC-001](/ROSIE/specs/rfc-001/))
+- Parsing repositories to extract `@gxp-` annotations ([RFC-001](/specs/rfc-001/))
 - Building and validating the trace graph
 - Computing deterministic manifest hashes
-- Communicating with the SoR via the API contract ([RFC-004](/ROSIE/specs/rfc-004/))
+- Communicating with the SoR via the API contract ([RFC-004](/specs/rfc-004/))
 - Enforcing release gates in CI/CD pipelines
-- Generating evidence packages ([RFC-003](/ROSIE/specs/rfc-003/))
+- Generating evidence packages ([RFC-003](/specs/rfc-003/))
 
 ### 1.2 System of Record Responsibilities (Out of Scope)
 
-The SoR is a separate system that implements [RFC-004](/ROSIE/specs/rfc-004/). The SoR handles:
+The SoR is a separate system that implements [RFC-004](/specs/rfc-004/). The SoR handles:
 
 - User authentication and authorization
 - Approval workflows (sequential, parallel, role-based)
@@ -201,7 +201,7 @@ To be fit for purpose in a GxP environment, the ROSIE Engine must satisfy qualif
 
 ## Related RFCs
 
-- [RFC-001: Data Standard](/ROSIE/specs/rfc-001/) — Data structures processed by the engine
-- [RFC-003: Evidence Standard](/ROSIE/specs/rfc-003/) — Evidence capture triggered by the engine
-- [RFC-004: API Interface](/ROSIE/specs/rfc-004/) — API endpoints called by the engine
-- [RFC-005: TQ Baseline](/ROSIE/specs/rfc-005/) — Qualification requirements for the engine
+- [RFC-001: Data Standard](/specs/rfc-001/) — Data structures processed by the engine
+- [RFC-003: Evidence Standard](/specs/rfc-003/) — Evidence capture triggered by the engine
+- [RFC-004: API Interface](/specs/rfc-004/) — API endpoints called by the engine
+- [RFC-005: TQ Baseline](/specs/rfc-005/) — Qualification requirements for the engine
