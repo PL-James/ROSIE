@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rosie-bg: #0a0a0f;
+  --rosie-surface: #12121a;
+  --rosie-surface-light: #1a1a24;
+  --rosie-border: #2a2a36;
+  --rosie-cyan: #00d4ff;
+  --rosie-green: #00ff88;
+  --rosie-yellow: #ffd700;
+  --rosie-red: #ff4757;
+  --rosie-purple: #a855f7;
+  --rosie-text: #e4e4e7;
+  --rosie-text-muted: #71717a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  background-color: var(--rosie-bg);
+  color: var(--rosie-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--rosie-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--rosie-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rosie-text-muted);
+}
+
+/* Status colors */
+.status-approved {
+  color: var(--rosie-green);
+}
+
+.status-pending {
+  color: var(--rosie-yellow);
+}
+
+.status-rejected,
+.status-blocked {
+  color: var(--rosie-red);
+}
+
+/* Glow effects */
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+.glow-yellow {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
+}
+
+/* Card styles */
+.card {
+  @apply bg-rosie-surface border border-rosie-border rounded-lg p-4;
+}
+
+.card-hover {
+  @apply hover:border-rosie-cyan/50 transition-colors duration-200;
+}
+
+/* Button styles */
+.btn {
+  @apply px-4 py-2 rounded-md font-medium transition-all duration-200;
+}
+
+.btn-primary {
+  @apply bg-rosie-cyan text-rosie-bg hover:bg-rosie-cyan/80;
+}
+
+.btn-success {
+  @apply bg-rosie-green text-rosie-bg hover:bg-rosie-green/80;
+}
+
+.btn-danger {
+  @apply bg-rosie-red text-white hover:bg-rosie-red/80;
+}
+
+.btn-ghost {
+  @apply bg-transparent border border-rosie-border text-rosie-text hover:bg-rosie-surface-light;
+}
+
+/* React Flow customization */
+.react-flow__node {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.react-flow__edge-path {
+  stroke: var(--rosie-border);
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--rosie-cyan);
+}
+
+.react-flow__controls {
+  background: var(--rosie-surface);
+  border: 1px solid var(--rosie-border);
+  border-radius: 8px;
+}
+
+.react-flow__controls-button {
+  background: var(--rosie-surface);
+  border-bottom: 1px solid var(--rosie-border);
+  fill: var(--rosie-text);
+}
+
+.react-flow__controls-button:hover {
+  background: var(--rosie-surface-light);
+}
+
+.react-flow__minimap {
+  background: var(--rosie-surface);
+  border: 1px solid var(--rosie-border);
+  border-radius: 8px;
+}
+
+/* Animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply animate-spin rounded-full border-2 border-rosie-border border-t-rosie-cyan;
+}

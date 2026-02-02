@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  sor-api:
+    build: ./sor-server
+    container_name: rosie-sor-api
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DATABASE_PATH=/data/rosie.db
+      - API_KEY=demo-key
+    volumes:
+      - sor-data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: ./dashboard
+      args:
+        VITE_API_URL: ""
+    container_name: rosie-dashboard
+    ports:
+      - "8080:80"
+    depends_on:
+      sor-api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  sor-data:
+    driver: local
+
+networks:
+  default:
+    name: rosie-network
