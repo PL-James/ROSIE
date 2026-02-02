@@ -1,9 +1,7 @@
 ---
-layout: page
+layout: ../layouts/PageLayout.astro
 title: Reference Implementation
 description: Example product manifest for a ROSIE-compliant repository
-permalink: /reference/
-show_sidebar: true
 ---
 
 This page demonstrates the structure of a ROSIE-compliant product manifest (`gxp-product.md`). Every repository using ROSIE must contain this file at the root.
@@ -65,18 +63,6 @@ gxp_metadata:
 
 ---
 
-## Additional Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `dependencies` | array | External repos with validated components |
-| `dependencies[].repo` | string | Repository URL |
-| `dependencies[].id_prefix` | string | Prefix for referenced IDs |
-| `gxp_metadata.gamp_category` | number | GAMP 5 software category (1-5) |
-| `gxp_metadata.risk_impact` | string | Risk classification (`Low`, `Medium`, `High`) |
-
----
-
 ## Repository Structure
 
 A compliant repository typically follows this structure:
@@ -122,6 +108,6 @@ Examples:
 
 ## Next Steps
 
-1. Review the [Data Standard (RFC-001)](/specs/rfc-001/) for tagging syntax
-2. Understand the [Engine Spec (RFC-002)](/specs/rfc-002/) for sync behavior
-3. Learn about [Evidence Packaging (RFC-003)](/specs/rfc-003/) for test outputs
+1. Review the [Data Standard (RFC-001)](/ROSIE/specs/rfc-001/) for tagging syntax
+2. Understand the [Engine Spec (RFC-002)](/ROSIE/specs/rfc-002/) for sync behavior
+3. Learn about [Evidence Packaging (RFC-003)](/ROSIE/specs/rfc-003/) for test outputs

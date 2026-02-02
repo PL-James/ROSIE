@@ -1,12 +1,8 @@
 ---
-layout: page
+layout: ../../layouts/PageLayout.astro
 title: "RFC-002: Engine Spec"
 description: Functional requirements for GxP sync and validation tools — the Integrity Guard
-permalink: /specs/rfc-002/
-show_sidebar: true
 ---
-
-<div class="metadata-table">
 
 | Field  | Value                                                                   |
 | ------ | ----------------------------------------------------------------------- |
@@ -15,13 +11,11 @@ show_sidebar: true
 | Status | Draft                                                                   |
 | Focus  | Tool qualification, AI protocols, release gates, sync logic             |
 
-</div>
-
 ---
 
 ## 1. Scope
 
-This RFC defines the functional requirements for the ROSIE Engine, the automated software orchestrator responsible for extracting [RFC-001](/specs/rfc-001/) data, maintaining Dual-Ledger synchronization with a System of Record (SoR), and enforcing regulatory gates within the CI/CD pipeline.
+This RFC defines the functional requirements for the ROSIE Engine, the automated software orchestrator responsible for extracting [RFC-001](/ROSIE/specs/rfc-001/) data, maintaining Dual-Ledger synchronization with a System of Record (SoR), and enforcing regulatory gates within the CI/CD pipeline.
 
 ---
 
@@ -133,32 +127,51 @@ To be fit for purpose in a GxP environment, the ROSIE Engine must satisfy qualif
 
 ## Appendix: Sequence Diagram (Hard-Gate Handshake)
 
-```mermaid
-sequenceDiagram
-    participant CI as CI/CD Pipeline
-    participant Eng as ROSIE Engine
-    participant SoR as System of Record
-    participant Env as Regulated Environment
-
-    CI->>Eng: Request Release (SHA, Hash)
-    Eng->>SoR: Validate Approvals and Signatures
-    SoR-->>Eng: Validation Result (JSON)
-    alt Validation Success
-        Eng->>Eng: Generate Signed RRT
-        Eng-->>CI: Success (RRT)
-        CI->>Env: Deploy Artifact + RRT
-        Env->>Env: Verify RRT Authenticity
-    else Validation Failure
-        Eng-->>CI: Error (Missing Signatures or Hash Drift)
-        CI->>CI: Terminate Build
-    end
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────────┐     ┌─────────────────────┐
+│ CI/CD       │     │ ROSIE Engine │     │ System of       │     │ Regulated           │
+│ Pipeline    │     │              │     │ Record          │     │ Environment         │
+└──────┬──────┘     └──────┬───────┘     └────────┬────────┘     └──────────┬──────────┘
+       │                   │                      │                         │
+       │ Request Release   │                      │                         │
+       │ (SHA, Hash)       │                      │                         │
+       │──────────────────>│                      │                         │
+       │                   │                      │                         │
+       │                   │ Validate Approvals   │                         │
+       │                   │ and Signatures       │                         │
+       │                   │─────────────────────>│                         │
+       │                   │                      │                         │
+       │                   │   Validation Result  │                         │
+       │                   │<─────────────────────│                         │
+       │                   │                      │                         │
+       │            ┌──────┴──────┐               │                         │
+       │            │ Validation  │               │                         │
+       │            │ Success?    │               │                         │
+       │            └──────┬──────┘               │                         │
+       │                   │                      │                         │
+       │    ┌──────────────┼──────────────┐      │                         │
+       │    │ YES          │          NO  │      │                         │
+       │    │              │              │      │                         │
+       │    │  Generate    │   Error:     │      │                         │
+       │    │  Signed RRT  │   Missing    │      │                         │
+       │    │              │   Signatures │      │                         │
+       │    │              │   or Hash    │      │                         │
+       │    │              │   Drift      │      │                         │
+       │<───┴──────────────┴──────────────┘      │                         │
+       │                                          │                         │
+       │ Deploy Artifact + RRT                    │                         │
+       │─────────────────────────────────────────────────────────────────>│
+       │                                          │                         │
+       │                                          │     Verify RRT          │
+       │                                          │     Authenticity        │
+       │                                          │                         │
 ```
 
 ---
 
 ## Related RFCs
 
-- [RFC-001: Data Standard](/specs/rfc-001/) — Data structures processed by the engine
-- [RFC-003: Evidence Standard](/specs/rfc-003/) — Evidence capture triggered by the engine
-- [RFC-004: API Interface](/specs/rfc-004/) — API endpoints called by the engine
-- [RFC-005: TQ Baseline](/specs/rfc-005/) — Qualification requirements for the engine
+- [RFC-001: Data Standard](/ROSIE/specs/rfc-001/) — Data structures processed by the engine
+- [RFC-003: Evidence Standard](/ROSIE/specs/rfc-003/) — Evidence capture triggered by the engine
+- [RFC-004: API Interface](/ROSIE/specs/rfc-004/) — API endpoints called by the engine
+- [RFC-005: TQ Baseline](/ROSIE/specs/rfc-005/) — Qualification requirements for the engine

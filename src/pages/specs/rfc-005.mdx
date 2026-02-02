@@ -1,0 +1,131 @@
+---
+layout: ../../layouts/PageLayout.astro
+title: "RFC-005: TQ Baseline"
+description: Reference dataset and product archetype standards for tool qualification
+---
+
+| Field  | Value                                                                |
+| ------ | -------------------------------------------------------------------- |
+| RFC ID | 005                                                                  |
+| Title  | ROSIE TQ Baseline: Reference Dataset and Product Archetype Standards |
+| Status | Draft                                                                |
+| Focus  | GAMP 5, tool validation, product archetypes, SVCV                    |
+
+---
+
+## 1. Scope
+
+This RFC provides the standard protocol and reference data required to qualify a ROSIE Engine. It also defines product archetypes, ensuring the ROSIE process adapts its validation rigor to the nature of the software product.
+
+---
+
+## 2. The Golden Repository (Reference Data)
+
+The TQ baseline includes a "Golden Repository" containing:
+
+### 2.1 Valid Patterns
+
+100+ variations of `@gxp-` tags across five languages:
+
+| Language | File Extensions | Comment Styles |
+|----------|-----------------|----------------|
+| C# | `.cs` | `//`, `/* */`, `///` |
+| Java | `.java` | `//`, `/* */`, `/** */` |
+| Python | `.py` | `#`, `"""` |
+| TypeScript | `.ts`, `.tsx` | `//`, `/* */`, `/** */` |
+| Go | `.go` | `//`, `/* */` |
+
+### 2.2 Invalid Patterns
+
+Purposely broken scenarios for negative testing:
+
+- Hashes with intentional corruption
+- Circular dependencies in trace graphs
+- Missing signatures
+- Duplicate IDs
+- Malformed YAML front matter
+
+---
+
+## 3. Product Archetypes and ASV
+
+Not all GxP products are built equally. The ROSIE Engine must recognize the product archetype declared in the `gxp-product.md` manifest.
+
+### 3.1 Archetype Definitions
+
+| Archetype      | Examples              | Validation Focus                | Evidence Requirements          |
+| -------------- | --------------------- | ------------------------------- | ------------------------------ |
+| SaaS/Cloud     | Web apps, portals     | Multi-tenancy, session auth     | PQ screenshots, API logs       |
+| Embedded/Edge  | Device firmware, IoT  | Memory safety, hardware interop | Unit test coverage, IQ hashes  |
+| Data/AI        | Analytics, ML models  | Data lineage, reproducibility   | Model weights, dataset hashes  |
+| Infrastructure | Platform-as-a-service | Security guardrails, networking | Terraform state, config drifts |
+
+### 3.2 ASV Profiles
+
+| Profile | Evidence Level | Review Rigor | Use Case |
+|---------|----------------|--------------|----------|
+| `minimal` | Logs only | AI review | Low-risk utilities |
+| `standard` | Logs + screenshots | AI + spot human review | Most products |
+| `rigorous` | Full evidence + video | AI + full human review | High-risk/regulated |
+
+---
+
+## 4. Self-Validating Continuous Validation (SVCV)
+
+To achieve self-validating status, the ROSIE Engine must perform recursive verification of its own integrity during every CI/CD run.
+
+### 4.1 Recursive Integrity Check
+
+| Step | Action | Failure Mode |
+|------|--------|--------------|
+| 1 | **Tool self-test**: Run a subset of the Golden Repository against the engine | Pipeline halted |
+| 2 | **Engine checksum**: Verify the engine binary/image hash against a known-good hash stored in the SoR | Pipeline halted |
+| 3 | **Proceed**: Only if steps 1-2 pass, scan production code | N/A |
+
+### 4.2 Automated Deviation Reporting
+
+- **Auto-log**: Any failure of the Hard-Gate ([RFC-002](/ROSIE/specs/rfc-002/)) must automatically generate a deviation report in the SoR
+- **Root cause tagging**: The AI agent identifies which requirements (URS/FRS) are breached by the current code state
+
+---
+
+## 5. Qualification Protocols
+
+### 5.1 Operational Qualification (OQ)
+
+To pass OQ, a ROSIE Engine must achieve:
+
+| Metric | Target |
+|--------|--------|
+| Extraction recall | 100% |
+| Extraction precision | 100% |
+| Gate fidelity | 100% |
+| Archetype awareness | 100% |
+
+### 5.2 Performance Qualification (PQ)
+
+| Metric | Target |
+|--------|--------|
+| Throughput | Process 1,000-file repo in < 60 seconds |
+| Persistence | SoR correctly archives evidence package |
+| Latency | Continuous tracking of time-to-trace |
+
+---
+
+## 6. Continuous Validation Lifecycle
+
+| Stage  | Action                     | Validation Artifact           |
+| ------ | -------------------------- | ----------------------------- |
+| Commit | Sync and semantic check    | Proposed trace graph          |
+| Build  | Engine self-test           | Tool health certificate       |
+| Test   | Evidence capture ([RFC-003](/ROSIE/specs/rfc-003/)) | Execution evidence (JSON)     |
+| Merge  | Hard-Gate RRT issue        | Automated release certificate |
+
+---
+
+## Related RFCs
+
+- [RFC-001: Data Standard](/ROSIE/specs/rfc-001/) — Tag patterns validated by the Golden Repository
+- [RFC-002: Engine Spec](/ROSIE/specs/rfc-002/) — Engine behavior qualified by OQ/PQ
+- [RFC-003: Evidence Standard](/ROSIE/specs/rfc-003/) — Evidence format for qualification tests
+- [RFC-004: API Interface](/ROSIE/specs/rfc-004/) — API endpoints used during qualification

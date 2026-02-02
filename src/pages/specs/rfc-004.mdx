@@ -1,12 +1,8 @@
 ---
-layout: page
+layout: ../../layouts/PageLayout.astro
 title: "RFC-004: API Interface"
 description: Standard contract for System of Record interoperability — the SoR connector
-permalink: /specs/rfc-004/
-show_sidebar: true
 ---
-
-<div class="metadata-table">
 
 | Field  | Value                                                                        |
 | ------ | ---------------------------------------------------------------------------- |
@@ -14,8 +10,6 @@ show_sidebar: true
 | Title  | ROSIE API Interface: Standard Contract for System of Record Interoperability |
 | Status | Draft                                                                        |
 | Focus  | API contracts, REST/gRPC, authentication, webhooks                           |
-
-</div>
 
 ---
 
@@ -46,14 +40,7 @@ Submits the extracted repository state to the SoR.
     {
       "id": "LDPC-URS-101",
       "type": "requirement",
-      "content_hash": "sha256:...",
-      "traces_to": []
-    },
-    {
-      "id": "LDPC-DS-001",
-      "type": "design",
-      "content_hash": "sha256:...",
-      "traces_to": ["LDPC-FRS-205"]
+      "content_hash": "sha256:..."
     }
   ]
 }
@@ -70,21 +57,9 @@ Submits the extracted repository state to the SoR.
 }
 ```
 
-**Behavior:** Upserts nodes into the SoR graph and flags drift if requirements have changed.
-
----
-
 ### 2.2 `GET /v1/release/readiness/{sha}`
 
 Checks if a specific commit is ready for deployment.
-
-**Request:**
-
-```
-GET /v1/release/readiness/abc123def456
-Authorization: Bearer <token>
-X-ROSIE-Signature: <signature>
-```
 
 **Response (ready):**
 
@@ -103,16 +78,6 @@ X-ROSIE-Signature: <signature>
 ```json
 {
   "is_ready": false,
-  "commit_sha": "abc123def456",
-  "manifest_hash": "sha256:...",
-  "pending_signatures": [
-    {
-      "id": "LDPC-DS-001",
-      "required_role": "qa_lead",
-      "status": "pending"
-    }
-  ],
-  "release_token": null,
   "blockers": [
     "Missing approval for LDPC-DS-001",
     "Hash mismatch for LDPC-URS-101"
@@ -120,40 +85,9 @@ X-ROSIE-Signature: <signature>
 }
 ```
 
----
-
 ### 2.3 `POST /v1/evidence/upload`
 
-Submits `gxp-execution.json` (defined in [RFC-003](/specs/rfc-003/)) to the SoR.
-
-**Request:**
-
-```json
-{
-  "execution_id": "uuid",
-  "commit_sha": "abc123def456",
-  "evidence_hash": "sha256:...",
-  "evidence_uri": "s3://bucket/evidence/execution-uuid.json",
-  "summary": {
-    "total": 25,
-    "passed": 24,
-    "failed": 1,
-    "skipped": 0
-  }
-}
-```
-
-**Response:**
-
-```json
-{
-  "accepted": true,
-  "archive_id": "uuid",
-  "linked_nodes": ["LDPC-OQ-001", "LDPC-OQ-002", "LDPC-PQ-001"]
-}
-```
-
-**Behavior:** Links test results to specific `@gxp-id` nodes in the trace graph.
+Submits `gxp-execution.json` (defined in [RFC-003](/ROSIE/specs/rfc-003/)) to the SoR.
 
 ---
 
@@ -164,8 +98,6 @@ Submits `gxp-execution.json` (defined in [RFC-003](/specs/rfc-003/)) to the SoR.
 All API communication must use TLS 1.2 or higher.
 
 ### 3.2 Authentication (MUST)
-
-All requests must use one of the following authentication methods:
 
 | Method | Header | Description |
 |--------|--------|-------------|
@@ -181,32 +113,9 @@ Every request must include an `X-ROSIE-Signature` header, which is a hash of the
 X-ROSIE-Signature: sha256=<base64-encoded-signature>
 ```
 
-The SoR must verify this signature before processing any request.
-
 ---
 
-## 4. Webhook Notifications
-
-The SoR may optionally push notifications to the ROSIE Engine when approval states change.
-
-### 4.1 `POST /hooks/approval-changed`
-
-**Payload:**
-
-```json
-{
-  "event": "approval_changed",
-  "node_id": "LDPC-DS-001",
-  "new_status": "approved",
-  "approved_by": "qa_lead@example.com",
-  "approved_at": "2026-02-01T10:00:00Z",
-  "signature": "sha256:..."
-}
-```
-
----
-
-## 5. Error Responses
+## 4. Error Responses
 
 All error responses follow a standard format:
 
@@ -223,7 +132,7 @@ All error responses follow a standard format:
 }
 ```
 
-### 5.1 Standard Error Codes
+### 4.1 Standard Error Codes
 
 | Code | HTTP Status | Description |
 |------|-------------|-------------|
@@ -232,32 +141,11 @@ All error responses follow a standard format:
 | `NOT_FOUND` | 404 | Requested resource does not exist |
 | `HASH_MISMATCH` | 409 | Manifest hash does not match |
 | `SIGNATURE_INVALID` | 422 | X-ROSIE-Signature verification failed |
-| `RATE_LIMITED` | 429 | Too many requests |
-
----
-
-## 6. Rate Limiting
-
-The SoR should implement rate limiting to prevent abuse:
-
-| Endpoint | Limit |
-|----------|-------|
-| `/v1/sync/manifest` | 60 requests/minute |
-| `/v1/release/readiness/{sha}` | 120 requests/minute |
-| `/v1/evidence/upload` | 30 requests/minute |
-
-Rate limit headers:
-
-```
-X-RateLimit-Limit: 60
-X-RateLimit-Remaining: 45
-X-RateLimit-Reset: 1706792400
-```
 
 ---
 
 ## Related RFCs
 
-- [RFC-001: Data Standard](/specs/rfc-001/) — Data structures sent via these endpoints
-- [RFC-002: Engine Spec](/specs/rfc-002/) — Engine sequence diagrams utilizing these endpoints
-- [RFC-003: Evidence Standard](/specs/rfc-003/) — Evidence package uploaded via `/evidence/upload`
+- [RFC-001: Data Standard](/ROSIE/specs/rfc-001/) — Data structures sent via these endpoints
+- [RFC-002: Engine Spec](/ROSIE/specs/rfc-002/) — Engine sequence diagrams utilizing these endpoints
+- [RFC-003: Evidence Standard](/ROSIE/specs/rfc-003/) — Evidence package uploaded via `/evidence/upload`

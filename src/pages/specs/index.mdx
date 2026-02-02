@@ -1,9 +1,7 @@
 ---
-layout: page
+layout: ../../layouts/PageLayout.astro
 title: Specifications
 description: The ROSIE RFC stack — technical specifications for compliance-as-code
-permalink: /specs/
-show_sidebar: true
 ---
 
 The ROSIE framework is defined by five Request for Comments (RFC) documents. Together, they specify the data structures, engine behavior, evidence formats, API contracts, and qualification requirements for a compliant implementation.
@@ -14,11 +12,11 @@ The ROSIE framework is defined by five Request for Comments (RFC) documents. Tog
 
 | RFC | Title | Status | Focus |
 |-----|-------|--------|-------|
-| [RFC-001](/specs/rfc-001/) | Data Standard | Draft | Tagging syntax, manifest schema |
-| [RFC-002](/specs/rfc-002/) | Engine Spec | Draft | Hard-gates, AI protocols, sync logic |
-| [RFC-003](/specs/rfc-003/) | Evidence Standard | Draft | Artifact packaging, 21 CFR Part 11 |
-| [RFC-004](/specs/rfc-004/) | API Interface | Draft | SoR connector, REST contracts |
-| [RFC-005](/specs/rfc-005/) | TQ Baseline | Draft | Self-validation, product archetypes |
+| [RFC-001](/ROSIE/specs/rfc-001/) | Data Standard | Draft | Tagging syntax, manifest schema |
+| [RFC-002](/ROSIE/specs/rfc-002/) | Engine Spec | Draft | Hard-gates, AI protocols, sync logic |
+| [RFC-003](/ROSIE/specs/rfc-003/) | Evidence Standard | Draft | Artifact packaging, 21 CFR Part 11 |
+| [RFC-004](/ROSIE/specs/rfc-004/) | API Interface | Draft | SoR connector, REST contracts |
+| [RFC-005](/ROSIE/specs/rfc-005/) | TQ Baseline | Draft | Self-validation, product archetypes |
 
 ---
 
@@ -33,7 +31,7 @@ Defines the universal syntax and structure for embedding GxP validation metadata
 - Annotation syntax (`@gxp-id`, `@gxp-traces`, `@gxp-type`)
 - Directed acyclic graph (DAG) representation
 
-[Read RFC-001 →](/specs/rfc-001/)
+[Read RFC-001 →](/ROSIE/specs/rfc-001/)
 
 ---
 
@@ -49,7 +47,7 @@ Defines the functional requirements for the ROSIE Engine — the automated orche
 - AI agent protocols
 - Release Readiness Token (RRT) generation
 
-[Read RFC-002 →](/specs/rfc-002/)
+[Read RFC-002 →](/ROSIE/specs/rfc-002/)
 
 ---
 
@@ -65,7 +63,7 @@ Defines the structure of the `gxp-execution.json` artifact for capturing automat
 - Log sanitization rules
 - Immutability guarantees
 
-[Read RFC-003 →](/specs/rfc-003/)
+[Read RFC-003 →](/ROSIE/specs/rfc-003/)
 
 ---
 
@@ -79,7 +77,7 @@ Defines the RESTful API contract that any System of Record must implement to sup
 - Security requirements (mTLS, OAuth2)
 - Non-repudiation via signed requests
 
-[Read RFC-004 →](/specs/rfc-004/)
+[Read RFC-004 →](/ROSIE/specs/rfc-004/)
 
 ---
 
@@ -94,7 +92,7 @@ Provides the standard protocol and reference data required to qualify a ROSIE En
 - Self-validating continuous validation (SVCV)
 - OQ/PQ protocols for the engine itself
 
-[Read RFC-005 →](/specs/rfc-005/)
+[Read RFC-005 →](/ROSIE/specs/rfc-005/)
 
 ---
 

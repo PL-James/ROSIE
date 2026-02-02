@@ -1,12 +1,8 @@
 ---
-layout: page
+layout: ../../layouts/PageLayout.astro
 title: "RFC-003: Evidence Standard"
 description: Schema for automated qualification evidence — 21 CFR Part 11 compliant artifact packaging
-permalink: /specs/rfc-003/
-show_sidebar: true
 ---
-
-<div class="metadata-table">
 
 | Field  | Value                                                                |
 | ------ | -------------------------------------------------------------------- |
@@ -14,8 +10,6 @@ show_sidebar: true
 | Title  | ROSIE Evidence Standard: Schema for Automated Qualification Evidence |
 | Status | Draft                                                                |
 | Focus  | 21 CFR Part 11 compliance, evidence schemas, immutable logs          |
-
-</div>
 
 ---
 
@@ -99,14 +93,6 @@ The evidence package is a JSON-LD compliant object that aggregates execution met
 | `logs` | array | No | Captured stdout/stderr |
 | `attachments` | array | No | Evidence files (screenshots, exports) |
 
-### 3.4 Attachment Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `type` | string | Yes | `screenshot`, `log`, `export`, `video` |
-| `hash` | string | Yes | SHA-256 hash of the file |
-| `uri` | string | Yes | Storage location (S3, local path, etc.) |
-
 ---
 
 ## 4. Evidence Collection Rules
@@ -150,64 +136,8 @@ The SoR must be capable of verifying the stored hash matches the original submis
 
 ---
 
-## 6. Example: Complete Evidence Package
-
-```json
-{
-  "execution_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "timestamp": "2026-02-01T14:30:00Z",
-  "commit_sha": "abc123def456789",
-  "environment": {
-    "os": "ubuntu-22.04",
-    "runtime": "node-v18.1.0",
-    "container_digest": "sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
-    "sbom_ref": "evidence/sbom-2026-02-01.json"
-  },
-  "results": [
-    {
-      "gxp_id": "LDPC-OQ-001",
-      "status": "PASS",
-      "duration_ms": 45,
-      "logs": [
-        "Testing checksum validation...",
-        "Input: valid-payload",
-        "Expected: true, Actual: true",
-        "PASS"
-      ],
-      "attachments": []
-    },
-    {
-      "gxp_id": "LDPC-PQ-001",
-      "status": "PASS",
-      "duration_ms": 1250,
-      "logs": [
-        "End-to-end workflow test starting...",
-        "Step 1: Login - OK",
-        "Step 2: Submit data - OK",
-        "Step 3: Verify checksum - OK",
-        "PASS"
-      ],
-      "attachments": [
-        {
-          "type": "screenshot",
-          "hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "uri": "s3://gxp-evidence/LDPC/PQ-001-final-state.png"
-        }
-      ]
-    }
-  ],
-  "signature": {
-    "signed_by": "BuildAgent-CI-01",
-    "hash_method": "SHA-256",
-    "value": "3a7bd3e2360a8be4b3c2d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5"
-  }
-}
-```
-
----
-
 ## Related RFCs
 
-- [RFC-001: Data Standard](/specs/rfc-001/) — Tag definitions referenced in results
-- [RFC-002: Engine Spec](/specs/rfc-002/) — Engine logic that triggers evidence capture
-- [RFC-004: API Interface](/specs/rfc-004/) — Evidence upload endpoint
+- [RFC-001: Data Standard](/ROSIE/specs/rfc-001/) — Tag definitions referenced in results
+- [RFC-002: Engine Spec](/ROSIE/specs/rfc-002/) — Engine logic that triggers evidence capture
+- [RFC-004: API Interface](/ROSIE/specs/rfc-004/) — Evidence upload endpoint

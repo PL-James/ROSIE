@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Home">
+  <div class="hero">
+    <div class="hero-content">
+      <pre class="hero-ascii">
+██████╗  ██████╗ ███████╗██╗███████╗
+██╔══██╗██╔═══██╗██╔════╝██║██╔════╝
+██████╔╝██║   ██║███████╗██║█████╗
+██╔══██╗██║   ██║╚════██║██║██╔══╝
+██║  ██║╚██████╔╝███████║██║███████╗
+╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝╚══════╝</pre>
+      <h1 class="hero-title">
+        <span class="gradient-text">Compliance as Code</span><br>
+        for GxP Systems
+      </h1>
+      <p class="hero-subtitle">
+        ROSIE treats the GxP SDLC as a graph-based data problem, not a document-heavy administrative task.
+      </p>
+      <div class="hero-badges">
+        <span class="badge">GAMP 5</span>
+        <span class="badge">CSA</span>
+        <span class="badge">21 CFR Part 11</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">&#9881;</div>
+      <h3 class="feature-title">Truth-in-Code</h3>
+      <p class="feature-description">
+        All requirements and design artifacts live in the repository. URS, FRS, and design specs in Markdown. No shadow documents. No drift.
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9878;</div>
+      <h3 class="feature-title">Dual-Ledger Model</h3>
+      <p class="feature-description">
+        Git stores what was built and why. System of Record stores who approved it and when. Cryptographic handshake ensures immutability.
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9888;</div>
+      <h3 class="feature-title">Hard Gates</h3>
+      <p class="feature-description">
+        Deployment is cryptographically blocked unless integrity checks pass. No green check, no release.
+      </p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#10003;</div>
+      <h3 class="feature-title">Self-Validating Pipeline</h3>
+      <p class="feature-description">
+        Every CI/CD run proves system integrity. Compliance is continuously re-proven, not assumed.
+      </p>
+    </div>
+  </div>
+
+  <article class="page">
+    <div class="page-content">
+      <h2>The Trace Model</h2>
+      <pre><code>URS ──┬──▶ FRS ──┬──▶ DESIGN ──┬──▶ TEST ──┬──▶ RELEASE
+      └──────────┴─────────────┴───────────┴── HASHED ── SIGNED</code></pre>
+      <p>Traceability is treated as a <strong>first-class graph</strong>, not a spreadsheet.</p>
+
+      <hr>
+
+      <h2>Integrity Guard</h2>
+      <pre><code>commit → hash → sign → verify → attest → GATE → deploy
+                                      │
+                             BLOCK IF CHECK FAILS</code></pre>
+      <p>The Integrity Guard enforces:</p>
+      <ul>
+        <li>Deterministic builds</li>
+        <li>Immutable artifacts</li>
+        <li>Cryptographic traceability</li>
+        <li>Signature enforcement</li>
+        <li>Release gating</li>
+      </ul>
+
+      <hr>
+
+      <h2>Philosophy</h2>
+      <blockquote>
+        <p>If it isn't in the repo, it isn't real.<br>
+        If it isn't signed, it isn't trusted.<br>
+        If it can't be traced, it can't be released.</p>
+      </blockquote>
+
+      <hr>
+
+      <h2>The RFC Stack</h2>
+      <table>
+        <thead>
+          <tr><th>RFC</th><th>Title</th><th>Focus</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><a href="/ROSIE/specs/rfc-001/">RFC-001</a></td><td>Data Standard</td><td>Tagging syntax, manifest schema</td></tr>
+          <tr><td><a href="/ROSIE/specs/rfc-002/">RFC-002</a></td><td>Engine Spec</td><td>Hard-gates, AI protocols, sync logic</td></tr>
+          <tr><td><a href="/ROSIE/specs/rfc-003/">RFC-003</a></td><td>Evidence Standard</td><td>Artifact packaging, 21 CFR Part 11</td></tr>
+          <tr><td><a href="/ROSIE/specs/rfc-004/">RFC-004</a></td><td>API Interface</td><td>SoR connector, REST contracts</td></tr>
+          <tr><td><a href="/ROSIE/specs/rfc-005/">RFC-005</a></td><td>TQ Baseline</td><td>Self-validation, product archetypes</td></tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <h2>Status</h2>
+      <pre><code>SELF-VALIDATING PIPELINE .............. ENABLED
+CRYPTO SIGNATURE CHECKS .............. ENFORCED
+ARTIFACT CO-LOCATION ................ REQUIRED
+DOCUMENT DRIFT ...................... IMPOSSIBLE</code></pre>
+
+      <hr>
+
+      <h2>Project Mascots</h2>
+      <pre><code>        /)  (\
+   .-._((,~~,))_.-.
+    `-.  @  @  .-'
+       /   ^   \        _
+      (  \___/  )     _(o)>
+       `-.___.-'     /  \\
+          / \       /____\\
+         /___\        ||
+       Unicorn      Flamingo</code></pre>
+      <p>ROSIE is named for Rose — inspiration officer, unicorn specialist, flamingo enthusiast.</p>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,12 +1,10 @@
-# Jekyll
-_site/
-.sass-cache/
-.jekyll-cache/
-.jekyll-metadata
+# Astro
+dist/
+.astro/
 
-# Ruby
-Gemfile.lock
-vendor/
+# Node
+node_modules/
+npm-debug.log*
 
 # OS
 .DS_Store
@@ -18,3 +16,7 @@ Thumbs.db
 *~
 .idea/
 .vscode/
+
+# Environment
+.env
+.env.*
