@@ -1,0 +1,175 @@
+<?xml-model href="rfc7991bis.rnc"?>
+<!DOCTYPE rfc [
+  <!ENTITY rfc2119 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
+  <!ENTITY rfc8174 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml">
+  <!ENTITY rfc7515 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7515.xml">
+  <!ENTITY rfc4122 PUBLIC "" "http://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4122.xml">
+]>
+<rfc
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  category="std"
+  docName="draft-rosie-framework-01"
+  ipr="trust200902"
+  obsoletes=""
+  updates=""
+  submissionType="IETF"
+  xml:lang="en"
+  version="3">
+
+  <front>
+    <title abbrev="ROSIE Framework">ROSIE: Regulated Object Structure for Intelligent Evidence</title>
+    <seriesInfo name="Internet-Draft" value="draft-rosie-framework-01"/>
+    <author fullname="Jane Doe" initials="J." role="editor" surname="Doe">
+      <organization>ROSIE Working Group</organization>
+      <address>
+        <email>jd@example.com</email>
+      </address>
+    </author>
+    <date year="2026" month="2" day="3"/>
+    <area>Applications and Real-Time</area>
+    <workgroup>ROSIE Working Group</workgroup>
+    <keyword>GxP</keyword>
+    <keyword>AI Agent</keyword>
+    <keyword>Validation</keyword>
+    <keyword>Compliance</keyword>
+
+    <abstract>
+      <t>This document defines ROSIE (Regulated Object Structure for Intelligent Evidence), a framework for self-validating AI-generated software. It specifies a machine-readable repository structure, a hierarchical documentation model, and a cryptographic evidence protocol. ROSIE enables autonomous agents to maintain GxP compliance (e.g., 21 CFR Part 11) by treating validation artifacts as first-class, version-controlled objects.</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section anchor="introduction">
+      <name>Introduction</name>
+      <t>Traditional software validation in regulated industries (GxP) relies on manual, retrospective documentation. In agent-led development, this model fails to scale. ROSIE provides a protocol for "Continuous Validation," where an AI agent acts as a trusted maintainer of a cryptographically verifiable V-Model.</t>
+    </section>
+
+    <section anchor="terminology">
+      <name>Conventions and Terminology</name>
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.</t>
+    </section>
+
+    <section anchor="repo_structure">
+      <name>Repository Structure and State Consistency</name>
+      <t>A ROSIE-compliant repository MUST maintain the following structure:</t>
+      <sourcecode type="ascii-art">
+/
+├── .gxp/                    # Quality Management System Root
+│   ├── system_context.md    # Apex Document (Desired State)
+│   ├── risk_assessment.log  # Deterministic Risk Log
+│   ├── adr/                 # Architecture Decisions
+│   └── evidence/            # Signed Validation Artifacts
+├── docs/                    # V-Model Requirements
+└── src/                     # Implementation &amp; Design Specs
+      </sourcecode>
+
+      <section anchor="consistency">
+        <name>State Consistency and Concurrency</name>
+        <t>To ensure integrity during multi-agent or human-agent collaboration, the repository MUST utilize atomic commits. The .gxp/ directory acts as the authoritative state. An agent MUST NOT update source code without a corresponding increment to the version field in system_context.md if the change impacts intended use.</t>
+      </section>
+    </section>
+
+    <section anchor="apex">
+      <name>The Apex Document: System Context</name>
+      <t>The file .gxp/system_context.md defines the system boundary. It MUST contain a YAML frontmatter block adhering to the following schema:</t>
+      <ul>
+        <li>id: UUID (<xref target="RFC4122"/>)</li>
+        <li>project_name: String</li>
+        <li>version: SemVer 2.0.0</li>
+        <li>gxp_risk_rating: ["LOW", "MEDIUM", "HIGH"]</li>
+        <li>validation_status: ["DRAFT", "VALIDATED", "DEPRECATED"]</li>
+        <li>intended_use: String</li>
+      </ul>
+
+      <section anchor="risk_taxonomy">
+        <name>Risk Matrix Taxonomy</name>
+        <t>Agents SHALL determine risk based on the following taxonomy:</t>
+        <ul>
+          <li><strong>HIGH:</strong> Direct impact on patient safety, product quality, or PHI.</li>
+          <li><strong>MEDIUM:</strong> Indirect impact; manages critical metadata or workflow.</li>
+          <li><strong>LOW:</strong> No impact on GxP data integrity (e.g., UI formatting).</li>
+        </ul>
+      </section>
+    </section>
+
+    <section anchor="traceability">
+      <name>Traceability and Documentation</name>
+      <t>ROSIE documentation MUST be linked via a "Traceability Chain":</t>
+      <ol>
+        <li>Level 1 (REQ): High-level requirements.</li>
+        <li>Level 2 (US): User stories with Acceptance Criteria. MUST link to REQ.</li>
+        <li>Level 3 (SPEC): Technical design. MUST link to US.</li>
+      </ol>
+
+      <section anchor="error_handling">
+        <name>Error Handling for Broken Links</name>
+        <t>An "Invalid State" occurs if a child document references a non-existent parent_id. Agents MUST perform a "Traceability Audit" prior to every commit. If links are broken, the validation status MUST be reverted to "DRAFT".</t>
+      </section>
+    </section>
+
+    <section anchor="verification">
+      <name>Verification Tiering (IQ/OQ/PQ)</name>
+      <t>Verification activities MUST be categorized:</t>
+      <ul>
+        <li>IQ: Installation/Infrastructure verification.</li>
+        <li>OQ: Operational/Functional (Unit/Integration) testing.</li>
+        <li>PQ: Performance/E2E testing against Intended Use.</li>
+      </ul>
+      <t>Test code MUST use the @trace annotation to link to a US-ID.</t>
+    </section>
+
+    <section anchor="cryptography">
+      <name>Cryptographic Evidence Protocol</name>
+      <t>Validation evidence MUST be stored in .gxp/evidence/ as a JSON Web Signature (JWS) <xref target="RFC7515"/>.</t>
+      <section anchor="signatures">
+        <name>Signature Requirements</name>
+        <t>The payload MUST include:</t>
+        <ul>
+          <li>system_state_hash: SHA-256 hash of the entire /src tree.</li>
+          <li>test_results: Array of pass/fail status.</li>
+          <li>timestamp: UTC ISO8601.</li>
+        </ul>
+        <t>The JWS MUST be signed using a secure algorithm (e.g., ES256).</t>
+      </section>
+    </section>
+
+    <section anchor="security">
+      <name>Security Considerations</name>
+      <section anchor="adversarial">
+        <name>Adversarial Agent Mitigation</name>
+        <t>To prevent a single compromised agent from self-validating malicious code, a Multi-Party Authorization (MPA) model SHOULD be used. In HIGH risk systems, evidence artifacts SHOULD require signatures from at least two independent agent identities or one agent and one human validator.</t>
+      </section>
+    </section>
+
+    <section anchor="iana">
+      <name>IANA Considerations</name>
+      <t>This document requests the registration of a new media type: application/rosie+json for ROSIE evidence artifacts.</t>
+    </section>
+  </middle>
+
+  <back>
+    <references>
+      <name>References</name>
+      <references>
+        <name>Normative References</name>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7515.xml"/>
+        <xi:include href="https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4122.xml"/>
+      </references>
+    </references>
+
+    <section anchor="appendix_a">
+      <name>Reference System Instruction</name>
+      <t>Role: You are an Autonomous GxP Software Engineer operating under the ROSIE Framework (Regulated Object Structure for Intelligent Evidence). Your goal is to deliver software that is validated by design.</t>
+      <t>Core Directives:</t>
+      <ol>
+        <li>Read the State First: Always start by reading .gxp/system_context.md.</li>
+        <li>The V-Model is Law: NEVER write code without a corresponding User Story and Tech Spec.</li>
+        <li>Traceability is Mandatory: Every source file and test MUST link to a requirement or spec ID.</li>
+        <li>Risk Awareness: If changes impact data integrity or privacy, you MUST update the gxp_risk_rating.</li>
+        <li>Evidence over Assurance: Verify that test outputs are captured as signed artifacts in .gxp/evidence/.</li>
+      </ol>
+    </section>
+  </back>
+</rfc>
