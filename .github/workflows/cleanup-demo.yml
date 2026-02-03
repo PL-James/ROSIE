@@ -1,0 +1,139 @@
+name: Cleanup ROSIE Demo Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      codespace_name:
+        description: 'Codespace name to delete'
+        required: true
+        type: string
+      codespace_id:
+        description: 'Codespace ID to delete'
+        required: true
+        type: string
+      delay_minutes:
+        description: 'Minutes to wait before cleanup'
+        required: true
+        type: string
+
+  schedule:
+    # Backup cleanup: Run every 5 minutes to catch orphaned Codespaces
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: read
+  codespaces: write
+  issues: write
+
+jobs:
+  cleanup-specific:
+    name: Cleanup Specific Codespace
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Wait for TTL
+        env:
+          DELAY_MINUTES: ${{ inputs.delay_minutes }}
+        run: |
+          DELAY_SECONDS=$((DELAY_MINUTES * 60))
+          echo "⏰ Waiting ${DELAY_MINUTES} minutes (${DELAY_SECONDS} seconds) before cleanup..."
+          sleep ${DELAY_SECONDS}
+          echo "✅ TTL expired. Proceeding with cleanup."
+
+      - name: Delete Codespace
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CODESPACE_NAME: ${{ inputs.codespace_name }}
+        run: |
+          echo "🗑️ Deleting Codespace: ${CODESPACE_NAME}"
+
+          # Delete via GitHub CLI
+          gh api \
+            --method DELETE \
+            -H "Accept: application/vnd.github+json" \
+            /user/codespaces/${CODESPACE_NAME}
+
+          echo "✅ Codespace deleted successfully"
+
+      - name: Comment on Demo Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const codespaceName = '${{ inputs.codespace_name }}';
+
+            // Find the demo issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'demo',
+              state: 'open'
+            });
+
+            const demoIssue = issues.data.find(issue =>
+              issue.title.includes(codespaceName.split('-')[2] + '-' + codespaceName.split('-')[3])
+            );
+
+            if (demoIssue) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: demoIssue.number,
+                body: `⏰ **Demo environment has been automatically cleaned up.**\n\nThe ${duration}-minute TTL has expired and the Codespace has been deleted.\n\nThank you for trying ROSIE!`
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: demoIssue.number,
+                state: 'closed'
+              });
+            }
+
+  cleanup-orphaned:
+    name: Cleanup Orphaned Codespaces
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Find and Delete Expired Codespaces
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔍 Searching for expired ROSIE demo Codespaces..."
+
+          # List all Codespaces
+          CODESPACES=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            /user/codespaces | jq -c '.codespaces[]')
+
+          CURRENT_TIME=$(date +%s)
+          DELETED_COUNT=0
+
+          echo "$CODESPACES" | while read -r codespace; do
+            NAME=$(echo "$codespace" | jq -r '.name')
+
+            # Only process ROSIE demo Codespaces
+            if [[ ! "$NAME" =~ ^rosie-demo- ]]; then
+              continue
+            fi
+
+            CREATED_AT=$(echo "$codespace" | jq -r '.created_at')
+            CREATED_TS=$(date -d "$CREATED_AT" +%s)
+            AGE_MINUTES=$(( (CURRENT_TIME - CREATED_TS) / 60 ))
+
+            echo "Codespace: ${NAME}, Age: ${AGE_MINUTES} minutes"
+
+            # Delete if older than 35 minutes (5 min buffer after 30 min TTL)
+            if [ $AGE_MINUTES -gt 35 ]; then
+              echo "🗑️ Deleting expired Codespace: ${NAME}"
+              gh api \
+                --method DELETE \
+                -H "Accept: application/vnd.github+json" \
+                /user/codespaces/${NAME}
+              DELETED_COUNT=$((DELETED_COUNT+1))
+            fi
+          done
+
+          echo "✅ Cleanup complete. Deleted ${DELETED_COUNT} expired Codespace(s)."

@@ -1,0 +1,236 @@
+name: Create ROSIE Demo Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_identifier:
+        description: 'Optional: Your name/email for tracking'
+        required: false
+        type: string
+        default: 'anonymous'
+      duration_minutes:
+        description: 'Demo duration (minutes)'
+        required: false
+        type: choice
+        options:
+          - '10'
+          - '20'
+          - '30'
+        default: '30'
+
+permissions:
+  contents: read
+  codespaces: write
+  issues: write
+
+jobs:
+  create-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      demo_url: ${{ steps.urls.outputs.demo_url }}
+      codespace_name: ${{ steps.create.outputs.codespace_name }}
+
+    steps:
+      - name: Generate Demo Session ID
+        id: session
+        run: |
+          TIMESTAMP=$(date +%s)
+          RANDOM_ID=$(openssl rand -hex 4)
+          SESSION_ID="rosie-demo-${TIMESTAMP}-${RANDOM_ID}"
+          echo "session_id=${SESSION_ID}" >> $GITHUB_OUTPUT
+          echo "Created session ID: ${SESSION_ID}"
+
+      - name: Create Ephemeral Codespace
+        id: create
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SESSION_ID: ${{ steps.session.outputs.session_id }}
+          RETENTION_PERIOD: ${{ inputs.duration_minutes }}
+        run: |
+          echo "Creating Codespace for session: ${SESSION_ID}"
+
+          # Create Codespace via GitHub CLI
+          RESPONSE=$(gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/codespaces \
+            -f ref='main' \
+            -f machine='basicLinux32gb' \
+            -f display_name="${SESSION_ID}" \
+            -f idle_timeout_minutes="${RETENTION_PERIOD}" \
+            -f retention_period_minutes="${RETENTION_PERIOD}")
+
+          echo "$RESPONSE" | jq '.'
+
+          # Extract Codespace details
+          CODESPACE_NAME=$(echo "$RESPONSE" | jq -r '.name')
+          CODESPACE_ID=$(echo "$RESPONSE" | jq -r '.id')
+          CODESPACE_STATE=$(echo "$RESPONSE" | jq -r '.state')
+
+          echo "codespace_name=${CODESPACE_NAME}" >> $GITHUB_OUTPUT
+          echo "codespace_id=${CODESPACE_ID}" >> $GITHUB_OUTPUT
+          echo "codespace_state=${CODESPACE_STATE}" >> $GITHUB_OUTPUT
+
+          echo "Codespace created: ${CODESPACE_NAME} (${CODESPACE_ID})"
+          echo "Initial state: ${CODESPACE_STATE}"
+
+      - name: Wait for Codespace to Start
+        id: wait
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CODESPACE_NAME: ${{ steps.create.outputs.codespace_name }}
+        run: |
+          echo "Waiting for Codespace to become available..."
+
+          MAX_ATTEMPTS=30
+          ATTEMPT=0
+
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            STATE=$(gh api \
+              -H "Accept: application/vnd.github+json" \
+              /user/codespaces/${CODESPACE_NAME} | jq -r '.state')
+
+            echo "Attempt $((ATTEMPT+1))/${MAX_ATTEMPTS}: State = ${STATE}"
+
+            if [ "$STATE" = "Available" ]; then
+              echo "✅ Codespace is available!"
+              break
+            fi
+
+            ATTEMPT=$((ATTEMPT+1))
+            sleep 5
+          done
+
+          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+            echo "❌ Timeout waiting for Codespace to start"
+            exit 1
+          fi
+
+      - name: Generate Demo URLs
+        id: urls
+        env:
+          CODESPACE_NAME: ${{ steps.create.outputs.codespace_name }}
+        run: |
+          DASHBOARD_URL="https://${CODESPACE_NAME}-8080.app.github.dev"
+          API_URL="https://${CODESPACE_NAME}-3000.app.github.dev"
+
+          echo "demo_url=${DASHBOARD_URL}" >> $GITHUB_OUTPUT
+          echo "api_url=${API_URL}" >> $GITHUB_OUTPUT
+
+          echo "📊 Dashboard URL: ${DASHBOARD_URL}"
+          echo "🔧 API URL: ${API_URL}"
+
+      - name: Wait for Services to be Healthy
+        env:
+          DEMO_URL: ${{ steps.urls.outputs.demo_url }}
+        run: |
+          echo "⏳ Waiting for ROSIE services to be healthy..."
+          echo "This may take 15-30 seconds..."
+
+          MAX_ATTEMPTS=60
+          ATTEMPT=0
+          HEALTHY=false
+
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            echo "Attempt $((ATTEMPT+1))/${MAX_ATTEMPTS}: Checking health..."
+
+            # Try to reach the dashboard (checking if nginx is up)
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "${DEMO_URL}" || echo "000")
+
+            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "304" ]; then
+              echo "✅ Services are healthy! HTTP ${HTTP_CODE}"
+              HEALTHY=true
+              break
+            else
+              echo "⏳ Not ready yet (HTTP ${HTTP_CODE}). Waiting..."
+            fi
+
+            ATTEMPT=$((ATTEMPT+1))
+            sleep 5
+          done
+
+          if [ "$HEALTHY" = "false" ]; then
+            echo "⚠️ Warning: Services may not be fully ready, but proceeding anyway."
+            echo "Users may need to wait a few more seconds after clicking the URL."
+          fi
+
+          echo "Total wait time: $((ATTEMPT * 5)) seconds"
+
+      - name: Create Demo Information Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const demoUrl = '${{ steps.urls.outputs.demo_url }}';
+            const apiUrl = '${{ steps.urls.outputs.api_url }}';
+            const duration = '${{ inputs.duration_minutes }}';
+            const sessionId = '${{ steps.session.outputs.session_id }}';
+            const userIdentifier = '${{ inputs.user_identifier }}';
+            const expiresAt = new Date(Date.now() + duration * 60 * 1000);
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚀 ROSIE Demo Ready: ${sessionId}`,
+              body: `## Your ROSIE Demo Environment is Ready!
+
+            **🌐 Dashboard:** [${demoUrl}](${demoUrl})
+            **🔧 API Endpoint:** [${apiUrl}](${apiUrl})
+
+            ---
+
+            ### ℹ️ Demo Information
+            - **Session ID:** \`${sessionId}\`
+            - **User:** ${userIdentifier}
+            - **Duration:** ${duration} minutes
+            - **Created:** ${new Date().toISOString()}
+            - **Expires:** ${expiresAt.toISOString()}
+
+            ---
+
+            ### 🎯 Quick Start Guide
+
+            1. **Open the Dashboard:** Click the Dashboard URL above
+            2. **Explore the POC:** Navigate through the UI (Dashboard, Trace Graph, Approvals, Evidence, Audit Log, Release)
+            3. **Test the API:** The SoR API is running internally and proxied through the dashboard
+
+            ### 📚 Learn More
+            - [ROSIE Documentation](https://github.com/${{ github.repository }}/blob/main/README.md)
+            - [POC README](https://github.com/${{ github.repository }}/blob/main/poc/README.md)
+            - [Architecture Overview](https://github.com/${{ github.repository }}/blob/main/guidance/)
+
+            ---
+
+            ⏰ **Note:** This demo environment will automatically shut down in ${duration} minutes.
+            `,
+              labels: ['demo', 'auto-cleanup', 'codespace']
+            });
+
+      - name: Schedule Cleanup
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CODESPACE_NAME: ${{ steps.create.outputs.codespace_name }}
+          CODESPACE_ID: ${{ steps.create.outputs.codespace_id }}
+          DELAY_MINUTES: ${{ inputs.duration_minutes }}
+        run: |
+          echo "Scheduling cleanup for Codespace ${CODESPACE_NAME} in ${DELAY_MINUTES} minutes"
+
+          # Trigger cleanup workflow with delay
+          gh workflow run cleanup-demo.yml \
+            -f codespace_name="${CODESPACE_NAME}" \
+            -f codespace_id="${CODESPACE_ID}" \
+            -f delay_minutes="${DELAY_MINUTES}"
+
+          echo "✅ Cleanup scheduled"
+
+      - name: Summary
+        run: |
+          echo "### 🎉 Demo Environment Created Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Dashboard URL:** ${{ steps.urls.outputs.demo_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Session ID:** ${{ steps.session.outputs.session_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Duration:** ${{ inputs.duration_minutes }} minutes" >> $GITHUB_STEP_SUMMARY

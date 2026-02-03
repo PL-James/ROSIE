@@ -1,0 +1,763 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Try ROSIE Live" description="Launch a live demo of ROSIE in your browser - no installation required">
+  <div class="demo-page">
+    <div class="demo-hero">
+      <h1>🚀 Try ROSIE Live</h1>
+      <p class="hero-subtitle">
+        Experience ROSIE in your browser — no installation, no GitHub account required!
+      </p>
+    </div>
+
+    <div class="demo-container">
+      <div class="demo-card">
+        <div id="demo-form" class="demo-form-container">
+          <h2>Launch Your Demo Environment</h2>
+          <p class="form-description">
+            Get instant access to a fully functional ROSIE POC instance with pre-loaded compliance data.
+          </p>
+
+          <form id="launch-form" class="launch-form">
+            <div class="form-group">
+              <label for="email">Email (optional)</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="your@email.com"
+                class="form-input"
+              />
+              <span class="form-hint">We'll use this to identify your demo session</span>
+            </div>
+
+            <div class="form-group">
+              <label for="duration">Demo Duration</label>
+              <select id="duration" name="duration" class="form-select">
+                <option value="10">10 minutes</option>
+                <option value="20">20 minutes</option>
+                <option value="30" selected>30 minutes</option>
+              </select>
+              <span class="form-hint">Your environment will auto-cleanup after this time</span>
+            </div>
+
+            <button type="submit" id="launch-button" class="launch-button">
+              <span id="button-text">Launch Demo Environment</span>
+              <span id="button-loader" class="loader" style="display: none;">⏳</span>
+            </button>
+          </form>
+
+          <div class="features-grid">
+            <div class="feature">
+              <span class="feature-icon">✅</span>
+              <span>Full ROSIE POC</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">🔒</span>
+              <span>Private environment</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">⚡</span>
+              <span>Ready in ~60s</span>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">🆓</span>
+              <span>Completely free</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="demo-status" class="status-container" style="display: none;">
+          <div class="status-header">
+            <div class="status-icon">⏳</div>
+            <h2>Creating Your Demo</h2>
+          </div>
+
+          <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+
+          <p class="status-message" id="status-message">Initializing environment...</p>
+
+          <div class="status-details">
+            <div class="detail-item">
+              <span class="detail-label">Estimated time:</span>
+              <span class="detail-value">60-90 seconds</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status:</span>
+              <span class="detail-value" id="status-value">Provisioning</span>
+            </div>
+          </div>
+
+          <div class="tip-box">
+            <div class="tip-icon">💡</div>
+            <div class="tip-content">
+              <strong>While you wait:</strong> ROSIE bridges modern DevOps with regulatory compliance.
+              You're about to explore a full compliance-as-code framework for regulated software development.
+            </div>
+          </div>
+        </div>
+
+        <div id="demo-ready" class="ready-container" style="display: none;">
+          <div class="success-animation">
+            <div class="success-icon">✅</div>
+            <h2>Your Demo is Ready!</h2>
+          </div>
+
+          <a id="demo-link" href="#" target="_blank" class="demo-link">
+            <span>Open ROSIE Dashboard</span>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M5 10H15M15 10L10 5M15 10L10 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </a>
+
+          <div class="demo-info">
+            <div class="info-item">
+              <span class="info-label">Your demo URL:</span>
+              <code class="info-code" id="demo-url-display">https://...</code>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Session ID:</span>
+              <code class="info-code" id="session-id">-</code>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Expires in:</span>
+              <span class="info-value" id="expiry-time">30 minutes</span>
+            </div>
+          </div>
+
+          <div class="quick-start">
+            <h3>Quick Start Guide</h3>
+            <ol>
+              <li>Click "Open ROSIE Dashboard" above</li>
+              <li>Explore the POC: Dashboard, Trace Graph, Approvals, Evidence, Audit Log, Release</li>
+              <li>All features are pre-loaded with sample compliance data</li>
+            </ol>
+          </div>
+
+          <button id="launch-another" class="secondary-button">
+            Launch Another Demo
+          </button>
+        </div>
+
+        <div id="demo-error" class="error-container" style="display: none;">
+          <div class="error-icon">❌</div>
+          <h2>Provisioning Failed</h2>
+          <p class="error-message" id="error-message">
+            We encountered an error creating your demo environment. Please try again.
+          </p>
+          <button id="retry-button" class="retry-button">
+            Try Again
+          </button>
+        </div>
+      </div>
+
+      <div class="info-sidebar">
+        <div class="info-card">
+          <h3>What's Included</h3>
+          <ul class="info-list">
+            <li>ROSIE Dashboard (React SPA)</li>
+            <li>System of Record API (Express + SQLite)</li>
+            <li>Sample compliance artifacts</li>
+            <li>Full trace graph visualization</li>
+            <li>Approval workflow examples</li>
+            <li>Evidence linking demonstration</li>
+            <li>Audit log browser</li>
+            <li>Release checklist</li>
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h3>How It Works</h3>
+          <ol class="info-list">
+            <li>We create a private GitHub Codespace for you</li>
+            <li>ROSIE services start automatically (~60s)</li>
+            <li>You get a unique URL to your instance</li>
+            <li>Environment auto-deletes after your selected duration</li>
+          </ol>
+        </div>
+
+        <div class="info-card">
+          <h3>Need Help?</h3>
+          <p>
+            Check the <a href="/core/">Core Concepts</a> or visit our
+            <a href="https://github.com/PL-James/ROSIE" target="_blank" rel="noopener">GitHub repository</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .demo-page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .demo-hero {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .demo-hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary, #666);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .demo-container {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .demo-container {
+      grid-template-columns: 1fr;
+    }
+
+    .info-sidebar {
+      order: 2;
+    }
+  }
+
+  .demo-card {
+    background: white;
+    border-radius: 16px;
+    padding: 3rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .demo-form-container h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-description {
+    color: var(--text-secondary, #666);
+    margin-bottom: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #1a1a1a);
+  }
+
+  .form-input,
+  .form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus,
+  .form-select:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .form-hint {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-secondary, #666);
+    margin-top: 0.25rem;
+  }
+
+  .launch-button {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .launch-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .launch-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .loader {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .feature-icon {
+    font-size: 1.25rem;
+  }
+
+  /* Status Container */
+  .status-container,
+  .ready-container,
+  .error-container {
+    text-align: center;
+  }
+
+  .status-header {
+    margin-bottom: 2rem;
+  }
+
+  .status-icon,
+  .error-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .success-animation {
+    margin-bottom: 2rem;
+  }
+
+  .success-icon {
+    font-size: 5rem;
+    animation: bounceIn 0.6s ease-out;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .progress-container {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  .status-message {
+    font-size: 1.125rem;
+    color: var(--text-primary, #1a1a1a);
+    margin-bottom: 2rem;
+  }
+
+  .status-details {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .detail-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary, #666);
+  }
+
+  .detail-value {
+    font-weight: 600;
+    color: var(--text-primary, #1a1a1a);
+  }
+
+  .tip-box {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border-radius: 12px;
+    text-align: left;
+  }
+
+  .tip-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .tip-content {
+    line-height: 1.6;
+  }
+
+  .demo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    text-decoration: none;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+  }
+
+  .demo-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .demo-info {
+    text-align: left;
+    padding: 1.5rem;
+    background: #f5f5f5;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: var(--text-secondary, #666);
+  }
+
+  .info-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    background: white;
+    border-radius: 4px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .quick-start {
+    text-align: left;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .quick-start h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .quick-start ol {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.8;
+  }
+
+  .secondary-button,
+  .retry-button {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #667eea;
+    background: white;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .secondary-button:hover,
+  .retry-button:hover {
+    background: #667eea;
+    color: white;
+  }
+
+  .error-message {
+    color: var(--text-secondary, #666);
+    margin-bottom: 2rem;
+  }
+
+  /* Info Sidebar */
+  .info-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .info-card h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--text-primary, #1a1a1a);
+  }
+
+  .info-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.8;
+    color: var(--text-secondary, #666);
+  }
+
+  .info-card a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .info-card a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  // Configuration - UPDATE THIS WITH YOUR CLOUDFLARE WORKER URL
+  const WORKER_URL = 'https://rosie-demo-api.your-subdomain.workers.dev';
+
+  const form = document.getElementById('launch-form') as HTMLFormElement;
+  const formContainer = document.getElementById('demo-form');
+  const statusContainer = document.getElementById('demo-status');
+  const readyContainer = document.getElementById('demo-ready');
+  const errorContainer = document.getElementById('demo-error');
+
+  const launchButton = document.getElementById('launch-button') as HTMLButtonElement;
+  const buttonText = document.getElementById('button-text');
+  const buttonLoader = document.getElementById('button-loader');
+
+  const progressBar = document.getElementById('progress-bar') as HTMLElement;
+  const statusMessage = document.getElementById('status-message');
+  const statusValue = document.getElementById('status-value');
+
+  const demoLink = document.getElementById('demo-link') as HTMLAnchorElement;
+  const demoUrlDisplay = document.getElementById('demo-url-display');
+  const sessionIdDisplay = document.getElementById('session-id');
+  const expiryTimeDisplay = document.getElementById('expiry-time');
+
+  const errorMessage = document.getElementById('error-message');
+  const retryButton = document.getElementById('retry-button');
+  const launchAnotherButton = document.getElementById('launch-another');
+
+  let pollInterval: number | null = null;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await launchDemo();
+  });
+
+  retryButton?.addEventListener('click', () => {
+    showForm();
+  });
+
+  launchAnotherButton?.addEventListener('click', () => {
+    showForm();
+  });
+
+  async function launchDemo() {
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    const durationSelect = document.getElementById('duration') as HTMLSelectElement;
+
+    const email = emailInput?.value || '';
+    const duration = durationSelect?.value || '30';
+
+    // Disable form
+    launchButton.disabled = true;
+    if (buttonText) buttonText.style.display = 'none';
+    if (buttonLoader) buttonLoader.style.display = 'inline';
+
+    try {
+      // Show status container
+      showStatus();
+
+      // Call worker to create demo
+      updateProgress(10, 'Triggering demo creation...');
+
+      const response = await fetch(`${WORKER_URL}/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, duration })
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create demo');
+      }
+
+      const data = await response.json();
+      updateProgress(20, 'Demo creation triggered! Creating Codespace...');
+
+      // Start polling for status
+      startPolling(data.workflowRunId);
+
+    } catch (error) {
+      console.error('Error launching demo:', error);
+      showError(error instanceof Error ? error.message : 'An unexpected error occurred');
+    } finally {
+      launchButton.disabled = false;
+      if (buttonText) buttonText.style.display = 'inline';
+      if (buttonLoader) buttonLoader.style.display = 'none';
+    }
+  }
+
+  function startPolling(workflowRunId: number | null) {
+    let attempt = 0;
+    const maxAttempts = 60; // 5 minutes max (5s intervals)
+
+    pollInterval = window.setInterval(async () => {
+      attempt++;
+
+      try {
+        const response = await fetch(`${WORKER_URL}/status/${workflowRunId || 'latest'}`);
+        const data = await response.json();
+
+        if (data.status === 'ready') {
+          // Demo is ready!
+          stopPolling();
+          showReady(data);
+        } else if (data.status === 'error') {
+          stopPolling();
+          showError(data.message);
+        } else {
+          // Still provisioning
+          const progress = Math.min(20 + (attempt / maxAttempts) * 70, 90);
+          updateProgress(progress, data.message || 'Creating your demo environment...');
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+        // Continue polling unless max attempts reached
+      }
+
+      if (attempt >= maxAttempts) {
+        stopPolling();
+        showError('Demo provisioning took too long. Please try again or check the GitHub Actions workflow.');
+      }
+    }, 5000); // Poll every 5 seconds
+  }
+
+  function stopPolling() {
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+  }
+
+  function showForm() {
+    if (formContainer) formContainer.style.display = 'block';
+    if (statusContainer) statusContainer.style.display = 'none';
+    if (readyContainer) readyContainer.style.display = 'none';
+    if (errorContainer) errorContainer.style.display = 'none';
+    stopPolling();
+  }
+
+  function showStatus() {
+    if (formContainer) formContainer.style.display = 'none';
+    if (statusContainer) statusContainer.style.display = 'block';
+    if (readyContainer) readyContainer.style.display = 'none';
+    if (errorContainer) errorContainer.style.display = 'none';
+  }
+
+  function showReady(data: any) {
+    updateProgress(100, 'Demo ready!');
+
+    if (formContainer) formContainer.style.display = 'none';
+    if (statusContainer) statusContainer.style.display = 'none';
+    if (readyContainer) readyContainer.style.display = 'block';
+    if (errorContainer) errorContainer.style.display = 'none';
+
+    if (demoLink) demoLink.href = data.demoUrl;
+    if (demoUrlDisplay) demoUrlDisplay.textContent = data.demoUrl;
+    if (sessionIdDisplay) sessionIdDisplay.textContent = data.sessionId || '-';
+
+    const durationSelect = document.getElementById('duration') as HTMLSelectElement;
+    const duration = durationSelect?.value || '30';
+    if (expiryTimeDisplay) expiryTimeDisplay.textContent = `${duration} minutes`;
+  }
+
+  function showError(message: string) {
+    if (formContainer) formContainer.style.display = 'none';
+    if (statusContainer) statusContainer.style.display = 'none';
+    if (readyContainer) readyContainer.style.display = 'none';
+    if (errorContainer) errorContainer.style.display = 'block';
+
+    if (errorMessage) errorMessage.textContent = message;
+  }
+
+  function updateProgress(percent: number, message: string) {
+    if (progressBar) progressBar.style.width = `${percent}%`;
+    if (statusMessage) statusMessage.textContent = message;
+    if (statusValue) {
+      if (percent < 30) statusValue.textContent = 'Initializing';
+      else if (percent < 60) statusValue.textContent = 'Provisioning';
+      else if (percent < 90) statusValue.textContent = 'Starting Services';
+      else statusValue.textContent = 'Almost Ready';
+    }
+  }
+</script>

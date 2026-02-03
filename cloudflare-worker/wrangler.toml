@@ -1,0 +1,17 @@
+name = "rosie-demo-api"
+main = "demo-api-proxy.ts"
+compatibility_date = "2024-01-01"
+
+# Deploy to Cloudflare Workers
+workers_dev = true
+
+[env.production]
+name = "rosie-demo-api"
+route = { pattern = "demo-api.rosie.workers.dev", zone_name = "workers.dev" }
+
+# Environment variables (set via wrangler secret)
+# GITHUB_TOKEN - set via: wrangler secret put GITHUB_TOKEN
+# ALLOWED_ORIGINS - set via: wrangler secret put ALLOWED_ORIGINS
+
+# Example allowed origins (adjust for your GitHub Pages domain)
+# ALLOWED_ORIGINS = "https://pl-james.github.io,http://localhost:4321"

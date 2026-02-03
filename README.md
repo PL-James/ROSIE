@@ -32,6 +32,32 @@ Instead of disconnected documents, ROSIE enforces **traceable, signed, co-locate
 
 ---
 
+## 🚀 Try ROSIE Live
+
+Experience ROSIE in your browser — no installation or GitHub account required!
+
+[![Try Live Demo](https://img.shields.io/badge/🚀_Try-Live_Demo-blue?style=for-the-badge)](https://pl-james.github.io/ROSIE/demo/)
+
+**What you get:**
+- ✅ Fully functional ROSIE dashboard
+- ✅ Pre-configured System of Record API
+- ✅ Example app with sample compliance data
+- ✅ 30 minutes of exclusive access
+- ✅ Unique URL (your own private environment)
+- ✅ No login required
+
+**Single-click access:**
+- Visit the [Demo Page](https://pl-james.github.io/ROSIE/demo/)
+- Click "Launch Demo Environment"
+- Wait ~60 seconds
+- Get your unique URL and start exploring
+
+Your demo environment automatically shuts down after 30 minutes to save resources.
+
+> **For developers:** You can also [trigger demos directly via GitHub Actions](https://github.com/PL-James/ROSIE/actions/workflows/create-demo.yml) (requires GitHub login).
+
+---
+
 ## 🚀 Core Premise
 
 ROSIE enforces four non-negotiable principles:

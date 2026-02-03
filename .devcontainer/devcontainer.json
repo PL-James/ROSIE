@@ -1,0 +1,46 @@
+{
+  "name": "ROSIE Demo Environment",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "moby": true
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  "forwardPorts": [8080, 3000],
+
+  "portsAttributes": {
+    "8080": {
+      "label": "ROSIE Dashboard",
+      "onAutoForward": "notify",
+      "visibility": "public"
+    },
+    "3000": {
+      "label": "SoR API",
+      "onAutoForward": "ignore",
+      "visibility": "private"
+    }
+  },
+
+  "postCreateCommand": "bash -c 'cd poc && docker-compose up -d && echo \"Waiting for services to start...\" && sleep 15 && docker-compose ps'",
+
+  "postAttachCommand": "bash -c 'cd poc && docker-compose ps && echo \"\" && echo \"✅ ROSIE services are running!\" && echo \"\" && echo \"📊 Dashboard: https://$CODESPACE_NAME-8080.app.github.dev\" && echo \"🔧 API: https://$CODESPACE_NAME-3000.app.github.dev/health\" && echo \"\"'",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}

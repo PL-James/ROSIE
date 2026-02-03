@@ -21,7 +21,8 @@ services:
 
   dashboard:
     build:
-      context: ./dashboard
+      context: .
+      dockerfile: ./dashboard/Dockerfile
       args:
         VITE_API_URL: ""
     container_name: rosie-dashboard
