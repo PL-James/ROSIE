@@ -1,8 +1,14 @@
-# ROSIE
+```
+ ____   ___  ____ ___ _____
+|  _ \ / _ \/ ___|_ _| ____|
+| |_) | | | \___ \| ||  _|
+|  _ <| |_| |___) | || |___
+|_| \_\\___/|____/___|_____|
 
-**Regulated Object Structure for Intelligent Evidence**
+Regulated Object Structure for Intelligent Evidence
+```
 
-A framework for self-validating AI-generated software in regulated industries (GxP compliance).
+**A framework for self-validating AI-generated software in regulated industries (GxP compliance)**
 
 ## Overview
 
@@ -74,6 +80,60 @@ ROSIE is designed for AI-led development in regulated industries:
 ## Status
 
 **Draft Specification** - RFC-001 is currently in draft status and under active development.
+
+## Meet the Mascots
+
+### Ruby the Unicorn - Validation Guardian
+```
+       \
+        \
+         \\
+          \\
+           >\/7
+       _.-(6'  \
+      (=___._/` \
+           )  \ |
+          /   / |
+         /    > /
+        j    < _\
+    _.-' :      ``.
+    \ r=._\        `.
+   <`\\_  \         .`-.
+    \ r-7  `-. ._  ' .  `\
+     \`,      `-.`7  7)   )
+      \/         \|  \'  / `-._
+                 ||    .'
+                  \\  (
+                   >\  >
+               ,.-' >.'
+              <.'_.''
+                <'
+```
+*"Every commit is validated, every test is traced!"*
+
+### Flavia the Flamingo - Compliance Advocate
+```
+            _..--""-.
+          .'         `-.
+         /      _    _  \
+        :      ( )--( )  ;
+        |       `.__.`   |
+        |  ,              |
+         \  '--.    __..-'
+          `.    `--`    .'
+            |           |
+            |   ,---,   |
+            |  (     )  |
+            | <`._____.'> |
+            |   /   \   |
+           .'  |     |  `.
+         .'    |     |    `.
+        <      |     |      >
+         `-.___|     |___.-'
+             /_|     |_\
+            (__/     \__)
+```
+*"Pink today, compliant tomorrow, GxP forever!"*
 
 ## License
 
