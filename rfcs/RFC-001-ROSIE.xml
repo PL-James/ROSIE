@@ -8,7 +8,7 @@
 <rfc
   xmlns:xi="http://www.w3.org/2001/XInclude"
   category="std"
-  docName="draft-rosie-framework-01"
+  docName="draft-rosie-framework-02"
   ipr="trust200902"
   obsoletes=""
   updates=""
@@ -18,14 +18,14 @@
 
   <front>
     <title abbrev="ROSIE Framework">ROSIE: Regulated Object Structure for Intelligent Evidence</title>
-    <seriesInfo name="Internet-Draft" value="draft-rosie-framework-01"/>
+    <seriesInfo name="Internet-Draft" value="draft-rosie-framework-02"/>
     <author fullname="Jane Doe" initials="J." role="editor" surname="Doe">
       <organization>ROSIE Working Group</organization>
       <address>
         <email>jd@example.com</email>
       </address>
     </author>
-    <date year="2026" month="2" day="3"/>
+    <date year="2026" month="2" day="5"/>
     <area>Applications and Real-Time</area>
     <workgroup>ROSIE Working Group</workgroup>
     <keyword>GxP</keyword>
@@ -66,6 +66,38 @@
       <section anchor="consistency">
         <name>State Consistency and Concurrency</name>
         <t>To ensure integrity during multi-agent or human-agent collaboration, the repository MUST utilize atomic commits. The .gxp/ directory acts as the authoritative state. An agent MUST NOT update source code without a corresponding increment to the version field in system_context.md if the change impacts intended use.</t>
+      </section>
+
+      <section anchor="risk_assessment_log">
+        <name>Risk Assessment Log Format</name>
+        <t>The file .gxp/risk_assessment.log MUST be a deterministic, append-only risk register. Each entry MUST conform to the following format:</t>
+        <sourcecode type="text">
+[DATE] RISK-ID | REQ-ID | Risk: LEVEL | Impact: ... | Mitigation: ... | Test Coverage: SPEC-ID
+        </sourcecode>
+        <t>Fields:</t>
+        <ul>
+          <li>DATE: ISO 8601 date (YYYY-MM-DD) enclosed in square brackets.</li>
+          <li>RISK-ID: Unique identifier in the form RISK-NNN or RISK-INF-NNN for infrastructure risks.</li>
+          <li>REQ-ID: The requirement identifier this risk applies to, or "INFRA" for infrastructure-level risks.</li>
+          <li>Risk: One of LOW, MEDIUM, or HIGH per the Risk Matrix Taxonomy in Section 4.</li>
+          <li>Impact: Free-text description of the potential negative outcome.</li>
+          <li>Mitigation: Free-text description of the controls in place.</li>
+          <li>Test Coverage: Comma-separated list of SPEC-IDs that verify the mitigation.</li>
+        </ul>
+        <t>Agents MUST append a new risk entry whenever a requirement is added or modified. Existing entries MUST NOT be deleted; superseded risks SHOULD be annotated with a SUPERSEDED-BY reference.</t>
+      </section>
+
+      <section anchor="adr_directory">
+        <name>Architecture Decision Records</name>
+        <t>The directory .gxp/adr/ MUST contain Architecture Decision Records (ADRs) for all significant technical decisions. Each ADR MUST be a Markdown file named ADR-NNN-short-title.md and MUST contain at minimum:</t>
+        <ul>
+          <li>Title: Descriptive name of the decision.</li>
+          <li>Status: One of "Proposed", "Accepted", "Deprecated", or "Superseded".</li>
+          <li>Context: The circumstances and constraints that led to the decision.</li>
+          <li>Decision: The chosen approach.</li>
+          <li>Consequences: Positive and negative impacts of the decision.</li>
+        </ul>
+        <t>ADRs are immutable once accepted. If a decision is reversed, a new ADR MUST be created that references the superseded ADR.</t>
       </section>
     </section>
 
@@ -116,6 +148,74 @@
         <li>PQ: Performance/E2E testing against Intended Use.</li>
       </ul>
       <t>Test code MUST use the @trace annotation to link to a US-ID.</t>
+
+      <section anchor="evidence_package_format">
+        <name>Evidence Package Format</name>
+        <t>Evidence MUST be produced as self-contained, tiered evidence packages stored under .gxp/evidence/. Each package is a directory whose name follows the pattern {TIER}-{SPEC_ID}-{ISO_TIMESTAMP}. A package MUST contain the following common files:</t>
+        <ul>
+          <li>metadata.json: Package identity including @context, package_id, spec_id, tier, traced_user_story, system_state_hash, git_commit, and created_at.</li>
+          <li>environment.json: Runtime environment snapshot (node version, platform, arch, OS release, hostname, working directory, filtered environment variables, and capture timestamp).</li>
+          <li>test-output.log: Human-readable test execution log with pass/fail/skip counts and per-test-case results.</li>
+          <li>artifacts/test-results.json: Machine-readable test results (tool, version, passed, failed, skipped, duration_ms, test_cases array).</li>
+          <li>configuration/: Directory reserved for configuration snapshots.</li>
+        </ul>
+        <t>Tier-specific content:</t>
+        <ul>
+          <li>IQ packages MUST include artifacts/dependency-tree.json (resolved dependency graph) and artifacts/health-check.json (infrastructure readiness report).</li>
+          <li>OQ packages MUST include artifacts/coverage-report.json (code coverage metrics with line, branch, and function percentages).</li>
+          <li>PQ packages MUST include screenshots/ (PNG captures at desktop, tablet, and mobile viewports) and traces/ (Playwright trace archives for replay and debugging).</li>
+        </ul>
+        <t>After all files are written, a manifest.json MUST be generated listing every file in the package (excluding manifest.json and manifest.jws) with its relative path, SHA-256 hash, and size in bytes. The manifest MUST include total_size_bytes and file_count. The manifest MUST then be signed to produce manifest.jws per Section 7.</t>
+      </section>
+
+      <section anchor="gxp_tag_syntax">
+        <name>GxP Tag Annotation Syntax</name>
+        <t>All test files and source files that participate in the evidence chain MUST include GxP tag annotations in JSDoc or block-comment format. The following annotations are defined:</t>
+        <ul>
+          <li>@gxp-tag SPEC-XXX-YYY: Links the file or test suite to a specification identifier. REQUIRED on all test files.</li>
+          <li>@trace US-XXX-YYY: Links the file or test suite to a user story identifier. REQUIRED on all test files.</li>
+          <li>@test-type IQ|OQ|PQ: Declares the verification tier this test contributes to. REQUIRED on all test files.</li>
+          <li>@gxp-criticality HIGH|MEDIUM|LOW: Declares the risk criticality level. RECOMMENDED on all test files.</li>
+          <li>@requirement REQ-XXX: Links to a high-level requirement. OPTIONAL.</li>
+          <li>@description: Free-text description of the test purpose. OPTIONAL.</li>
+        </ul>
+        <t>Example annotation block:</t>
+        <sourcecode type="typescript">
+/**
+ * @gxp-tag SPEC-001-001
+ * @trace US-001-001
+ * @gxp-criticality HIGH
+ * @test-type OQ
+ * @description OQ -- repository CRUD operations
+ */
+        </sourcecode>
+        <t>The evidence generation pipeline MUST parse these annotations to route test results into the correct tiered package and to establish traceability from evidence back to specifications and user stories.</t>
+      </section>
+
+      <section anchor="evidence_verification_protocol">
+        <name>Evidence Verification Protocol</name>
+        <t>A ROSIE-compliant system MUST implement a validatePackage operation that performs the following checks in order:</t>
+        <ol>
+          <li>Presence Check: Verify that manifest.json and manifest.jws both exist in the package directory. If either is missing, the package is INVALID.</li>
+          <li>Signature Verification: Decode manifest.jws using the repository's public key (SPKI PEM, ES256). If the JWS signature is invalid or the key does not match, the package is INVALID.</li>
+          <li>File Integrity: For each entry in manifest.files, verify the file exists at the declared relative path and its SHA-256 hash matches the declared value. Any mismatch indicates TAMPERING.</li>
+          <li>Completeness Check: Enumerate all files in the package directory (excluding manifest.json and manifest.jws). Any file not listed in the manifest indicates an UNAUTHORIZED ADDITION.</li>
+        </ol>
+        <t>A package passes validation if and only if all four checks succeed. The validatePackage operation MUST return a structured result containing a boolean valid flag and an array of error descriptions.</t>
+      </section>
+
+      <section anchor="evidence_lifecycle">
+        <name>Evidence Lifecycle Management</name>
+        <t>Evidence artifacts progress through a defined lifecycle:</t>
+        <ol>
+          <li>Generation: After test execution, the evidence generation pipeline collects test results, captures the environment snapshot, computes the system_state_hash, and creates a tiered evidence package directory.</li>
+          <li>Manifest Creation: All files in the package are enumerated and hashed. A manifest.json is written with the complete file listing, total size, and file count.</li>
+          <li>Signing: The manifest is signed using ES256 with the repository's private key. The resulting JWS compact serialization is written to manifest.jws. Legacy JWS evidence artifacts (single-file .jws) MAY also be produced for backward compatibility.</li>
+          <li>Verification: The validatePackage protocol (Section 6.4) is run immediately after signing to confirm the package was produced correctly. CI/CD pipelines MUST fail the build if verification fails.</li>
+          <li>Archival: Evidence packages are committed to the repository under .gxp/evidence/ and uploaded as CI artifacts with a minimum retention of 90 days. For long-term compliance, evidence SHOULD be archived to durable storage (e.g., S3, R2) with write-once semantics.</li>
+        </ol>
+        <t>Evidence artifacts MUST NOT be modified after signing. If a test is re-run, a new evidence package MUST be created. The previous package remains in the repository as part of the historical record.</t>
+      </section>
     </section>
 
     <section anchor="cryptography">
@@ -130,6 +230,19 @@
           <li>timestamp: UTC ISO8601.</li>
         </ul>
         <t>The JWS MUST be signed using a secure algorithm (e.g., ES256).</t>
+      </section>
+
+      <section anchor="system_state_hash">
+        <name>System State Hash Computation</name>
+        <t>The system_state_hash is a deterministic SHA-256 digest of the entire /src directory tree. It MUST be computed as follows:</t>
+        <ol>
+          <li>Recursively enumerate all files under /src, excluding node_modules/ and hidden directories (those starting with a dot).</li>
+          <li>Sort the resulting file list by relative path (lexicographic, ascending) to ensure determinism across platforms.</li>
+          <li>Initialize a SHA-256 hash context.</li>
+          <li>For each file in sorted order, update the hash with the file's relative path (UTF-8), then update the hash with the file's binary content. Including the path detects file renames.</li>
+          <li>Finalize the hash and encode as a 64-character lowercase hexadecimal string.</li>
+        </ol>
+        <t>The same system_state_hash computation MUST be used across all tiers (IQ, OQ, PQ) within a single validation run to ensure they attest to the same code state.</t>
       </section>
     </section>
 
@@ -170,6 +283,30 @@
         <li>Risk Awareness: If changes impact data integrity or privacy, you MUST update the gxp_risk_rating.</li>
         <li>Evidence over Assurance: Verify that test outputs are captured as signed artifacts in .gxp/evidence/.</li>
       </ol>
+    </section>
+
+    <section anchor="appendix_b">
+      <name>Changelog</name>
+
+      <section anchor="changelog_draft02">
+        <name>draft-02 (2026-02-05)</name>
+        <t>Changes from draft-01:</t>
+        <ul>
+          <li>Section 3: Added SS3.2 (Risk Assessment Log Format) defining the deterministic, append-only risk register format with required fields (DATE, RISK-ID, REQ-ID, Risk level, Impact, Mitigation, Test Coverage).</li>
+          <li>Section 3: Added SS3.3 (Architecture Decision Records) specifying the .gxp/adr/ directory, ADR file naming convention, and required content (Title, Status, Context, Decision, Consequences).</li>
+          <li>Section 6: Added SS6.2 (Evidence Package Format) defining the tiered directory-based evidence package structure with common files (metadata.json, environment.json, test-output.log, artifacts/test-results.json) and tier-specific content (IQ: dependency-tree + health-check; OQ: coverage-report; PQ: screenshots + traces).</li>
+          <li>Section 6: Added SS6.3 (GxP Tag Annotation Syntax) defining @gxp-tag, @trace, @test-type, @gxp-criticality, @requirement, and @description annotations with REQUIRED/RECOMMENDED/OPTIONAL designation.</li>
+          <li>Section 6: Added SS6.4 (Evidence Verification Protocol) specifying the four-step validatePackage operation (Presence Check, Signature Verification, File Integrity, Completeness Check).</li>
+          <li>Section 6: Added SS6.5 (Evidence Lifecycle Management) defining the five-stage lifecycle (Generation, Manifest Creation, Signing, Verification, Archival) with immutability requirements.</li>
+          <li>Section 7: Added SS7.2 (System State Hash Computation) specifying the deterministic SHA-256 algorithm for computing system_state_hash over the /src tree.</li>
+          <li>Back matter: Added Appendix B (this changelog).</li>
+        </ul>
+      </section>
+
+      <section anchor="changelog_draft01">
+        <name>draft-01 (2026-02-03)</name>
+        <t>Initial publication. Established core framework: repository structure, apex document schema, traceability chain, verification tiering (IQ/OQ/PQ), cryptographic evidence protocol (JWS/ES256), security considerations, and reference system instruction.</t>
+      </section>
     </section>
   </back>
 </rfc>
