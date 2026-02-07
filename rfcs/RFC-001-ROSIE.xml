@@ -31,17 +31,18 @@
     <keyword>GxP</keyword>
     <keyword>AI Agent</keyword>
     <keyword>Validation</keyword>
+    <keyword>Assurance</keyword>
     <keyword>Compliance</keyword>
 
     <abstract>
-      <t>This document defines ROSIE (Regulated Object Structure for Intelligent Evidence), a framework for self-validating AI-generated software. It specifies a machine-readable repository structure, a hierarchical documentation model, and a cryptographic evidence protocol. ROSIE enables autonomous agents to maintain GxP compliance (e.g., 21 CFR Part 11) by treating validation artifacts as first-class, version-controlled objects.</t>
+      <t>This document defines ROSIE (Regulated Object Structure for Intelligent Evidence), a framework for self-assuring AI-generated software. It specifies a machine-readable repository structure, a hierarchical documentation model, and a cryptographic evidence protocol. ROSIE enables autonomous agents to maintain GxP compliance (e.g., 21 CFR Part 11, QMSR 21 CFR 820) by treating assurance artifacts as first-class, version-controlled objects. Under the FDA Computer Software Assurance (CSA) paradigm, the Application Lifecycle Management (ALM) system (i.e., the git repository and its .gxp/ directory) serves as the authoritative Source of Truth for all assurance activities.</t>
     </abstract>
   </front>
 
   <middle>
     <section anchor="introduction">
       <name>Introduction</name>
-      <t>Traditional software validation in regulated industries (GxP) relies on manual, retrospective documentation. In agent-led development, this model fails to scale. ROSIE provides a protocol for "Continuous Validation," where an AI agent acts as a trusted maintainer of a cryptographically verifiable V-Model.</t>
+      <t>Traditional software validation in regulated industries (GxP) relies on manual, retrospective documentation. In agent-led development, this model fails to scale. ROSIE provides a protocol for "Continuous Assurance," where an AI agent acts as a trusted maintainer of a cryptographically verifiable V-Model. Note: The term "Continuous Assurance" supersedes the prior term "Continuous Validation" per FDA CSA guidance (February 2026). Both terms are used interchangeably in legacy contexts.</t>
     </section>
 
     <section anchor="terminology">
@@ -58,7 +59,8 @@
 │   ├── system_context.md    # Apex Document (Desired State)
 │   ├── risk_assessment.log  # Deterministic Risk Log
 │   ├── adr/                 # Architecture Decisions
-│   └── evidence/            # Signed Validation Artifacts
+│   ├── evidence/            # Signed Validation Artifacts (JWS + ROT)
+│   └── vendor_assessments/  # Third-Party Vendor QA Records
 ├── docs/                    # V-Model Requirements
 └── src/                     # Implementation &amp; Design Specs
       </sourcecode>
@@ -78,6 +80,7 @@
         <li>version: SemVer 2.0.0</li>
         <li>gxp_risk_rating: ["LOW", "MEDIUM", "HIGH"]</li>
         <li>validation_status: ["DRAFT", "VALIDATED", "DEPRECATED"]</li>
+        <li>assurance_status: ["DRAFT", "ASSURED", "DEPRECATED"] (OPTIONAL — alias for validation_status; "ASSURED" maps to "VALIDATED")</li>
         <li>intended_use: String</li>
       </ul>
 
@@ -90,6 +93,17 @@
           <li><strong>LOW:</strong> No impact on GxP data integrity (e.g., UI formatting).</li>
         </ul>
       </section>
+    </section>
+
+    <section anchor="evidence_by_risk">
+      <name>Evidence Requirements by Risk Level</name>
+      <t>Under the FDA CSA (February 2026) risk-based approach, evidence requirements vary by the artifact's gxp_risk_rating:</t>
+      <ul>
+        <li><strong>HIGH:</strong> Scripted testing REQUIRED. Evidence MUST be captured as JWS-signed artifacts in .gxp/evidence/. Multi-party authorization (MPA) SHOULD be used. Full IQ/OQ/PQ verification applies.</li>
+        <li><strong>MEDIUM:</strong> Unscripted or ad-hoc testing acceptable. Evidence MAY be captured as a Record of Testing (ROT) markdown file in .gxp/evidence/. Single-agent validation acceptable.</li>
+        <li><strong>LOW:</strong> Ad-hoc testing sufficient. A simple Record of Testing (who tested, when, pass/fail) MUST be recorded. Formal JWS evidence is OPTIONAL.</li>
+      </ul>
+      <t>This tiered approach implements the FDA's "80/20 rule": 80% of effort on testing, 20% on documenting. Non-HIGH risk artifacts benefit from reduced documentation burden while maintaining accountability.</t>
     </section>
 
     <section anchor="traceability">
@@ -133,6 +147,31 @@
       </section>
     </section>
 
+    <section anchor="record_of_testing">
+      <name>Record of Testing (ROT)</name>
+      <t>For MEDIUM and LOW risk artifacts, a Record of Testing (ROT) provides simplified evidence in lieu of full JWS signatures. A ROT file MUST be stored in .gxp/evidence/ with filename pattern ROT-{SPEC-ID}.md and contain the following YAML frontmatter:</t>
+      <ul>
+        <li>spec_id: Reference to the specification tested</li>
+        <li>tester: Identity of person or agent who performed testing</li>
+        <li>test_date: ISO8601 date of testing</li>
+        <li>test_type: "scripted" | "unscripted" | "ad-hoc"</li>
+        <li>result: "PASS" | "FAIL" | "PASS_WITH_DEVIATIONS"</li>
+        <li>summary: Brief narrative of what was tested and observed</li>
+      </ul>
+      <t>ROT files are version-controlled alongside other .gxp/ artifacts and provide an auditable record without the overhead of cryptographic signing.</t>
+    </section>
+
+    <section anchor="automated_evidence">
+      <name>Automated Evidence Generation</name>
+      <t>The FDA CSA guidance (February 2026) explicitly prefers automated evidence over manual screenshots or attestations. In ROSIE, automated evidence is generated as follows:</t>
+      <ul>
+        <li>CI/CD pipeline logs (e.g., GitHub Actions workflow runs) ARE valid evidence when they include test execution results, timestamps, and commit SHA references.</li>
+        <li>System-generated test reports (JUnit XML, TAP output, coverage reports) SHOULD be referenced in ROT or JWS evidence artifacts.</li>
+        <li>The automated evidence pipeline SHOULD: run tests, parse results, generate ROT (for non-HIGH) or JWS (for HIGH) artifacts, and commit them to the .gxp/evidence/ directory.</li>
+      </ul>
+      <t>The principle: "The log file IS the evidence." Automated evidence reduces transcription errors and provides tamper-evident audit trails inherently.</t>
+    </section>
+
     <section anchor="security">
       <name>Security Considerations</name>
       <section anchor="adversarial">
@@ -144,6 +183,32 @@
     <section anchor="iana">
       <name>IANA Considerations</name>
       <t>This document requests the registration of a new media type: application/rosie+json for ROSIE evidence artifacts.</t>
+    </section>
+
+    <section anchor="vendor_assurance">
+      <name>Vendor Assurance Framework</name>
+      <t>When a ROSIE-compliant system incorporates third-party software components, vendor quality certifications MAY be leveraged to reduce testing scope per FDA CSA guidance:</t>
+      <ul>
+        <li>Vendors holding ISO 13485, SOC 2 Type II, or IEC 62304 certifications provide assurance that reduces the testing burden on the integrator.</li>
+        <li>Vendor assessments MUST be documented in .gxp/vendor_assessments/ as markdown files with YAML frontmatter specifying: vendor_name, product, certification_type, certification_date, expiry_date, scope, and risk_reduction_justification.</li>
+        <li>A vendor assessment does NOT eliminate testing; it allows the integrator to focus testing on integration points rather than re-validating vendor-assured functionality.</li>
+      </ul>
+      <t>Vendor assessment records are part of the assurance evidence chain and MUST be included in Release Manifests.</t>
+    </section>
+
+    <section anchor="release_manifest">
+      <name>Release Manifest</name>
+      <t>A Release Manifest aggregates all assurance evidence for a specific software release. Under FDA CSA, e-signatures are applied to Release Manifests rather than individual test cases. The Release Manifest MUST be stored as a JWS-signed artifact in .gxp/evidence/ with the following payload:</t>
+      <ul>
+        <li>release_version: SemVer version being released</li>
+        <li>release_date: ISO8601 date</li>
+        <li>system_state_hash: SHA-256 hash of the source tree at release</li>
+        <li>evidence_summary: Array of evidence references (JWS file IDs and ROT file IDs)</li>
+        <li>vendor_assessments: Array of vendor assessment references</li>
+        <li>risk_assessment: Summary of risk coverage (HIGH/MEDIUM/LOW artifact counts and evidence types)</li>
+        <li>approver: Identity of release approver (Part 11 e-signature)</li>
+      </ul>
+      <t>The Release Manifest serves as the single point of regulatory review, consolidating all evidence into one auditable, e-signed document per release.</t>
     </section>
   </middle>
 
@@ -168,7 +233,8 @@
         <li>The V-Model is Law: NEVER write code without a corresponding User Story and Tech Spec.</li>
         <li>Traceability is Mandatory: Every source file and test MUST link to a requirement or spec ID.</li>
         <li>Risk Awareness: If changes impact data integrity or privacy, you MUST update the gxp_risk_rating.</li>
-        <li>Evidence over Assurance: Verify that test outputs are captured as signed artifacts in .gxp/evidence/.</li>
+        <li>Evidence is Assurance: Verify that test outputs are captured as signed artifacts (JWS for HIGH risk) or Records of Testing (ROT for non-HIGH risk) in .gxp/evidence/.</li>
+        <li>Risk-Proportionate Evidence: Match evidence rigor to risk level. HIGH risk requires scripted tests with JWS signatures. MEDIUM and LOW risk accept unscripted testing with ROT documentation. Never over-document LOW risk artifacts or under-document HIGH risk ones.</li>
       </ol>
     </section>
   </back>
